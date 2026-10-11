@@ -33,7 +33,7 @@ class Collector(HTMLParser):
         href = a.get("href") or ""
         if href.startswith("#studio/"):
             self.studio_links.append(href[len("#studio/"):])
-        for attr in ("src", "href"):
+        for attr in ("src", "href", "poster"):
             ref = a.get(attr)
             if ref and not re.match(r"^(https?:|mailto:|#|data:)", ref):
                 self.local_refs.append(ref)

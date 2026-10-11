@@ -71,8 +71,13 @@
   };
   addEventListener('hashchange', route);
   route();
-  // The browser jumps to the #id on load; the workspace already shows it.
-  if (location.hash) requestAnimationFrame(() => window.scrollTo(0, 0));
+  // Opening a link like /#studio/deaddice makes the browser scroll to that #id, sometimes after this script has run
+  // (once images load). The tab already shows it, so put the page and the window back at the top.
+  if (location.hash) {
+    const settle = () => { window.scrollTo(0, 0); if (fixedMode() && current) winOf(current).scrollTop = 0; };
+    requestAnimationFrame(settle);
+    addEventListener('load', () => requestAnimationFrame(settle), { once: true });
+  }
 
   // Help popup.
   const help = $('#help');

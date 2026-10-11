@@ -65,8 +65,9 @@ Refresh GitHub stars with:
 gh api repos/lcbcFoo/<repo> --jq .stargazers_count
 ```
 
-Statuses in use: `live`, `closed beta`, `coming soon`. When Dead Dice ships, replace its dashed
-`<span class="btn off">` with `<a class="btn primary" href="...">` like the other projects.
+Statuses in use: `live`, `closed beta`, `coming soon`. Dead Dice has its own site (deaddice.com) but isn't in a store
+yet: when it reaches Google Play, change its status, and turn the dashed `<span class="btn off">coming soon to Google
+Play</span>` into `<a class="btn" href="<store url>">Google Play ↗</a>` next to the deaddice.com button.
 
 ### Add a project
 
@@ -127,7 +128,10 @@ Where the current ones came from. The games' source repos are private: on Lucas'
 listed in `.agents/local/asset-sources.md` (gitignored, never commit it). Anywhere else, ask Lucas for the files.
 Don't write private repo names or local paths into tracked files.
 
-- Dead Dice: its store key art, line logo (`@2x`) and store screenshots.
+- Dead Dice: its store key art, line logo (`@2x`) and store screenshots. The trailer cover (`trailer-cover.webp`) and
+  the 32px party sprites (`hero-*.png`, shown at exactly 3×, 2× on phones) come from deaddice.com. The trailer itself
+  is not copied: it streams from `https://deaddice.com/store/video/trailer-16x9.mp4` with `preload="none"`. If
+  deaddice.com renames it, update the `<source>`; never autoplay it.
 - Letrado: frames of the in-app guide GIF (`magick guide.gif -coalesce f-%03d.png`) and the app logo.
 - Trials of Olyrion: only images already public on trialsofolyrion.com. Ask before using any unreleased art.
 - Heimdall: YouTube thumbnail `https://img.youtube.com/vi/7X1gntAXsao/maxresdefault.jpg`.
