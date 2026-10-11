@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b1b1d">
+<title>Foocolors Desktop · lcbcfoo.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,800;1,400&family=Martian+Mono:wdth,wght@75..112.5,300..800&display=swap">
+<style>
+/* Layout: a Hyprland desktop painted in foocolors.nvim. No titlebars; the focused window gets the
+   cyan→green border and its title shows in the ironbar at the bottom, like the real one.
+   Row 1: nvim hello.md · the avatar · a gh terminal. Row 2: nvim work.md · ~/studio in kitty.
+   Windows reflow on a 12-column grid; project cards reflow by their window's width (container queries). */
+:root {
+  --desk: #1b1b1d;
+  --bg: #212121;
+  --surface: #252529;
+  --surface-hi: #2d2b32;
+  --status: #37333f;
+  --fg: #f0ebe8;
+  --fg-dim: #bbb4ba;
+  --quiet: #858289;
+  --line: #66636e;
+  --system: #8fa8bd;
+  --coral: #ff8f9e;
+  --lime: #b6ff5c;
+  --gold: #ffc95c;
+  --sky: #8fbdff;
+  --lilac: #ca9aff;
+  --cyan: #5dffe9;
+  --border-on: linear-gradient(45deg, rgb(51 204 255 / 0.93), rgb(0 255 153 / 0.93));
+  --border-off: rgb(89 89 89 / 0.67);
+  --mono: "Source Code Pro", "SauceCodePro Nerd Font", "DejaVu Sans Mono", ui-monospace, monospace;
+  --display: "Martian Mono", "Source Code Pro", ui-monospace, monospace;
+  --gap: 6px;
+  --bar-h: 32px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0;
+  background: var(--desk);
+  color: var(--fg);
+  font: 400 0.95rem/1.65 var(--mono);
+  padding-inline: var(--gap);
+  padding-block: var(--gap) calc(var(--bar-h) + var(--gap) * 2 + env(safe-area-inset-bottom, 0px));
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Tiling ---------- */
+.tiles {
+  max-width: 1760px;
+  margin-inline: auto;
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "hello hello hello hello hello hello pic pic gh gh gh gh"
+    "work work work work studio studio studio studio studio studio studio studio";
+}
+.win {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(var(--border-off), var(--border-off)) border-box;
+  scroll-margin-top: var(--gap);
+}
+.win.focus { background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--border-on) border-box; }
+.body { padding: 15px; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* nvim end-of-buffer: fill leftover height with ~ like the real thing */
+.eob { flex: 1; position: relative; min-height: 0; }
+.eob::before {
+  content: "~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A";
+  position: absolute; inset: 0; overflow: hidden; white-space: pre; color: var(--line);
+}
+
+/* lualine-ish statusline */
+.statusline {
+  display: flex; flex-wrap: wrap; font-size: 0.72rem; line-height: 1.7;
+  background: var(--status); color: var(--fg-dim);
+  border-radius: 0 0 8px 8px; overflow: hidden;
+}
+.statusline span { padding: 1px 10px; }
+.statusline .mode { background: var(--surface-hi); color: var(--quiet); font-weight: 800; }
+.win.focus .statusline .mode { background: var(--lime); color: var(--desk); }
+.statusline .fill { flex: 1; padding: 0; }
+.statusline .pos { background: var(--surface-hi); }
+
+/* ---------- hello.md ---------- */
+#hello { grid-area: hello; }
+#hello .body { container-type: inline-size; padding-block: 18px 6px; }
+.h1 {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 112.5;
+  font-weight: 800;
+  font-size: clamp(2.1rem, 8cqi, 4.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--coral);
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+.h1 .hash { color: var(--line); font-weight: 300; }
+.h1 .cursor { display: inline-block; width: 0.5em; height: 0.88em; background: var(--cyan); vertical-align: -0.05em; margin-left: 0.08em; }
+#hello p { margin: 0 0 10px; max-width: 64ch; font-size: clamp(0.95rem, 1.15vw, 1.06rem); text-wrap: pretty; }
+.mdlinks { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.mdl { text-decoration: none; white-space: nowrap; }
+.mdl .b { color: var(--line); }
+.mdl .t { color: var(--sky); text-decoration: underline; text-underline-offset: 3px; }
+.mdl .u { color: var(--quiet); }
+.mdl:hover .t { color: var(--cyan); }
+.hl-lime { color: var(--lime); }
+.hl-gold { color: var(--gold); }
+.hl-sky { color: var(--sky); }
+.hl-coral { color: var(--coral); }
+.hl-cyan { color: var(--cyan); }
+.dim { color: var(--fg-dim); }
+.cmt { color: var(--quiet); font-style: italic; }
+
+/* ---------- avatar ---------- */
+#pic { grid-area: pic; margin: 0; }
+#pic .body { padding: 0; position: relative; min-height: 220px; }
+#pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; border-radius: 8px; }
+#pic figcaption { position: absolute; left: 8px; bottom: 8px; font-size: 0.7rem; background: rgb(27 27 29 / 0.84); color: var(--fg-dim); padding: 2px 8px; border-radius: 6px; }
+
+/* ---------- terminals ---------- */
+.prompt { margin: 0; color: var(--fg-dim); overflow-wrap: anywhere; }
+.prompt .u { color: var(--lime); }
+.prompt .h { color: var(--sky); }
+.prompt .cwd { color: var(--cyan); }
+.prompt .sym { color: var(--fg-dim); }
+.out { margin: 2px 0 14px; }
+.blink { display: inline-block; width: 0.6em; height: 1.1em; background: var(--fg); vertical-align: -0.2em; }
+@media (prefers-reduced-motion: no-preference) {
+  .blink, .h1 .cursor { animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+}
+
+#gh { grid-area: gh; }
+#gh .body { container-type: inline-size; font-size: 0.86rem; }
+.repos { margin: 4px 0 12px; display: grid; gap: 6px; }
+.repo { display: grid; grid-template-columns: 1fr; }
+.repo a { color: var(--lilac); text-decoration: none; }
+.repo a:hover { text-decoration: underline; }
+.repo span { color: var(--fg-dim); }
+@container (min-width: 400px) { .repo { grid-template-columns: 16ch 1fr; gap: 12px; } }
+
+/* ---------- work.md ---------- */
+#work { grid-area: work; }
+#work .body { padding-bottom: 6px; }
+.md-h1 { color: var(--sky); font-weight: 800; margin: 0 0 10px; font-size: 1rem; }
+.md-h2 { color: var(--lilac); font-weight: 600; margin: 16px 0 6px; font-size: 0.95rem; }
+.md-h1 .hash, .md-h2 .hash { color: var(--line); font-weight: 400; }
+.md-li { display: grid; grid-template-columns: 2ch 1fr; margin: 0 0 8px; font-size: 0.92rem; }
+.md-li::before { content: "-"; color: var(--gold); }
+.md-li > span { min-width: 0; }
+.chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 6px 2ch; font-size: 0.76rem; }
+.chain span { border: 1px solid var(--line); padding: 1px 8px; border-radius: 6px; color: var(--fg-dim); }
+.chain span:first-child { border-color: var(--coral); color: var(--coral); }
+.chain span:last-child { border-color: var(--lime); color: var(--lime); }
+.chain i { color: var(--line); font-style: normal; }
+
+/* ---------- ~/studio ---------- */
+#studio { grid-area: studio; }
+#studio .body { container-type: inline-size; }
+.cards { list-style: none; margin: 8px 0 16px; padding: 0; display: grid; gap: 8px; }
+.card {
+  --c: var(--fg);
+  position: relative;
+  display: grid; grid-template-columns: 88px minmax(0, 1fr); column-gap: 14px; align-content: start;
+  padding: 10px; border-radius: 8px; border: 1px solid transparent;
+}
+.card:hover, .card:focus-within { background: var(--surface); border-color: var(--c); }
+.card > *:not(.preview) { grid-column: 2; min-width: 0; }
+.preview {
+  grid-row: 1 / span 6; grid-column: 1;
+  position: relative; display: block; width: 88px; aspect-ratio: 1; max-width: 100%;
+  border-radius: 6px; overflow: hidden; background: var(--surface-hi);
+}
+.preview > img { width: 100%; height: 100%; object-fit: cover; }
+.preview .mark { display: none; }
+.card h3 { margin: 0; font-size: 1.02rem; font-weight: 800; color: var(--c); display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; }
+.card h3 a { text-decoration: none; }
+.card h3 a::after { content: ""; position: absolute; inset: 0; border-radius: 8px; }
+.card h3 a:hover { text-decoration: underline; }
+.st { font-size: 0.7rem; font-weight: 400; color: var(--fg-dim); white-space: nowrap; }
+.st::before { content: "["; color: var(--line); }
+.st::after { content: "]"; color: var(--line); }
+.card p { margin: 4px 0 0; color: var(--fg-dim); font-size: 0.86rem; line-height: 1.55; }
+.card p.tag { color: var(--fg); }
+.card .stack { color: var(--quiet); font-size: 0.74rem; }
+.p-letrado { --c: var(--sky); }
+.p-olyrion { --c: var(--gold); }
+.p-deaddice { --c: var(--coral); }
+.p-heimdall { --c: var(--cyan); }
+.p-reonv { --c: var(--lime); }
+.icon { display: grid; place-items: center; }
+.icon svg { width: 66%; }
+
+@container (min-width: 660px) {
+  .cards.games { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cards.games .card { display: flex; flex-direction: column; gap: 4px; padding: 8px 8px 10px; }
+  .cards.games .preview { width: 100%; aspect-ratio: 16 / 10; margin-bottom: 8px; }
+  .cards.games .preview::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(16 14 20 / 0.72), rgb(16 14 20 / 0) 55%); }
+  .cards.games .preview .mark { display: block; position: absolute; left: 10px; bottom: 10px; z-index: 1; height: auto; }
+  .cards.games .stack { margin-top: auto; padding-top: 4px; }
+  .cards.oss { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards.oss .preview { width: 72px; }
+  .cards.oss .card { grid-template-columns: 72px minmax(0, 1fr); }
+}
+.pixel { image-rendering: pixelated; }
+
+/* ---------- footer ---------- */
+footer { max-width: 1760px; margin: var(--gap) auto 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; font-size: 0.72rem; color: var(--quiet); padding-inline: 4px; }
+footer a { color: var(--fg-dim); }
+
+/* ---------- ironbar ---------- */
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  min-height: calc(var(--bar-h) + env(safe-area-inset-bottom, 0px));
+  padding: 3px 10px calc(3px + env(safe-area-inset-bottom, 0px));
+  background: rgb(27 27 29 / 0.96);
+  border-top: 1px solid var(--surface-hi);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 6px;
+  font-size: 0.82rem; color: var(--fg-dim);
+}
+.bar .start, .bar .end { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.bar .end { justify-content: flex-end; }
+.pill { background: var(--surface); border: 1px solid var(--surface-hi); border-radius: 8px; height: 26px; display: flex; align-items: center; white-space: nowrap; }
+.ws { padding: 2px 4px; gap: 4px; font-weight: 600; }
+.ws a { text-decoration: none; padding: 0 7px; min-width: 26px; text-align: center; border-radius: 7px; color: var(--quiet); line-height: 20px; transition: background 150ms ease-in-out, color 150ms ease-in-out; }
+.ws a:hover { color: var(--fg); background: var(--surface-hi); }
+.ws a.on { background: var(--lime); color: var(--bg); }
+.ws a span { font-weight: 400; margin-left: 5px; }
+.focused { padding: 0 10px; color: var(--fg); min-width: 0; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 24px; max-width: 36ch; }
+.focused b { color: var(--quiet); font-weight: 400; margin-right: 6px; }
+.clock { padding: 0 12px; color: var(--system); font-weight: 600; font-variant-numeric: tabular-nums; }
+.where { padding: 0 9px; color: var(--quiet); display: block; line-height: 24px; }
+.where em { font-style: normal; color: var(--fg-dim); }
+.tray { padding: 0 4px; gap: 2px; }
+.tray a { text-decoration: none; padding: 0 7px; border-radius: 6px; line-height: 20px; color: var(--fg-dim); }
+.tray a:hover { background: var(--surface-hi); color: var(--fg); }
+
+/* ---------- reflow ---------- */
+@media (max-width: 1179px) {
+  .tiles {
+    grid-template-areas:
+      "hello hello hello hello hello hello hello hello pic pic pic pic"
+      "studio studio studio studio studio studio studio studio studio studio studio studio"
+      "work work work work work work work gh gh gh gh gh";
+  }
+  .where { display: none; }
+}
+@media (max-width: 759px) {
+  .tiles { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pic" "hello" "work" "studio" "gh"; }
+  #pic .body { min-height: 0; aspect-ratio: 16 / 10; }
+  .bar { grid-template-columns: minmax(0, 1fr) auto; }
+  .bar .mid { display: none; }
+  .ws a span { display: none; }
+  .tray { display: none; }
+  .bar .end .clock { display: flex; }
+}
+@media (min-width: 760px) { .bar .end .clock { display: none; } }
+</style>
+</head>
+<body>
+
+<main class="tiles" id="top">
+  <section class="win focus" id="hello" data-ws="1" data-title="nvim ~/hello.md" aria-labelledby="hello-h">
+    <div class="body">
+      <h1 class="h1" id="hello-h"><span class="hash" aria-hidden="true"># </span>Hello there!<span class="cursor" aria-hidden="true"></span></h1>
+      <p>My name is <span class="hl-coral">Lucas</span>, I am a computer engineer and hobbyist from <span class="hl-lime">Brazil</span>, living in the <span class="hl-sky">silicon valley</span> and working on GPU architecture at <span class="hl-lime">NVIDIA</span>.</p>
+      <p class="dim">I am easy-going and enjoy working with diverse people and environments.</p>
+      <p class="mdlinks">
+        <a class="mdl" href="https://github.com/lcbcFoo"><span class="b">[</span><span class="t">github</span><span class="b">](</span><span class="u">github.com/lcbcFoo</span><span class="b">)</span></a>
+        <a class="mdl" href="#linkedin"><span class="b">[</span><span class="t">linkedin</span><span class="b">](</span><span class="u">linkedin.com/in/…</span><span class="b">)</span></a>
+      </p>
+      <div class="eob" aria-hidden="true"></div>
+    </div>
+    <div class="statusline" aria-hidden="true"><span class="mode">NORMAL</span><span>hello.md</span><span class="fill"></span><span>utf-8</span><span>en · pt-BR</span><span class="pos">Top</span></div>
+  </section>
+
+  <figure class="win" id="pic" data-ws="1" data-title="kitty me.jpg">
+    <div class="body">
+      <img src="assets/avatar.jpg" alt="Lucas's profile picture: a black and white border collie smiling on a sunny street">
+      <figcaption>me.jpg · 460×460</figcaption>
+    </div>
+  </figure>
+
+  <section class="win" id="gh" data-ws="1" data-title="kitty gh repo list" aria-labelledby="gh-h">
+    <div class="body">
+      <h2 class="sr-only" id="gh-h">Also on GitHub</h2>
+      <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~</span> <span class="sym">$</span> gh repo list lcbcFoo <span class="cmt"># also tinkering with</span></p>
+      <div class="repos">
+        <div class="repo"><a href="https://github.com/lcbcFoo/foocolors.nvim">foocolors.nvim</a><span>A dark, high-contrast pastel-neon colorscheme for Neovim</span></div>
+        <div class="repo"><a href="https://github.com/lcbcFoo/ironbar-gpu-top">ironbar-gpu-top</a><span>Compact nvtop-inspired NVIDIA monitor module for Ironbar</span></div>
+        <div class="repo"><a href="https://github.com/lcbcFoo/circuitly">circuitly</a><span>A visual and constructive framework for teaching digital circuits.</span></div>
+        <div class="repo"><a href="https://github.com/lcbcFoo/meNES">meNES</a><span>My Emulator of NES</span></div>
+      </div>
+      <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~</span> <span class="sym">$</span> <span class="blink" aria-hidden="true"></span></p>
+    </div>
+  </section>
+
+  <section class="win" id="work" data-ws="2" data-title="nvim ~/work.md" aria-labelledby="work-h">
+    <div class="body">
+      <h2 class="md-h1" id="work-h"><span class="hash"># </span>What I work on</h2>
+
+      <h3 class="md-h2"><span class="hash">## </span>Now</h3>
+      <p class="md-li"><span><span class="hl-gold">Senior GPU Architect</span> with over 7 years of experience in system architecture for ASIC, GPU, and SoC devices for both graphics and AI/ML workloads.</span></p>
+      <p class="md-li"><span>Currently architecting the <span class="hl-lime">secure boot of NVIDIA GPUs</span> (Blackwell, Rubin, and next gens), coordinating across many hardware, firmware, and software teams to deliver a secure initialization of the system, from power-up to SW.</span></p>
+      <div class="chain" aria-label="From power-up to SW"><span>power-up</span><i>→</i><span>hardware</span><i>→</i><span>firmware</span><i>→</i><span>SW</span></div>
+
+      <h3 class="md-h2"><span class="hash">## </span>Before</h3>
+      <p class="md-li"><span>I have also worked <span class="hl-gold">5 years</span> developing embedded solutions and hardware-software co-design projects for photonic devices at <span class="hl-sky">Lumentum/Idea</span>.</span></p>
+      <p class="md-li"><span>Master in Computer Science by <span class="hl-sky">UNICAMP</span>, with a specialization in Computer Architecture and Energy Efficiency.</span></p>
+      <p class="md-li"><span>Creator of <a class="hl-lime" href="#reonv">ReonV</a> (2018), one of the first RISC-V processors published from Brazil.</span></p>
+      <div class="eob" aria-hidden="true"></div>
+    </div>
+    <div class="statusline" aria-hidden="true"><span class="mode">NORMAL</span><span>work.md</span><span class="fill"></span><span>utf-8</span><span>markdown</span><span class="pos">All</span></div>
+  </section>
+
+  <section class="win" id="studio" data-ws="3" data-title="kitty ~/studio" aria-labelledby="studio-h">
+    <div class="body">
+      <h2 class="sr-only" id="studio-h">Studio: my hobbies</h2>
+      <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~/studio</span> <span class="sym">$</span> cat README</p>
+      <p class="out">Hobbyist with several projects in GitHub exploring ML, LLM, optimization problems, games, full stack apps.</p>
+
+      <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~/studio</span> <span class="sym">$</span> ls games/</p>
+      <ul class="cards games">
+        <li class="card p-letrado">
+          <div class="preview" style="background:#1c1530">
+            <img src="assets/letrado-frame.png" alt="" style="object-position:50% 42%">
+            <img class="mark" src="assets/letrado-logo.png" alt="" style="width:40px">
+          </div>
+          <h3><a href="https://letrado.app">letrado.app</a> <span class="st">live</span></h3>
+          <p class="tag">A daily word puzzle game where players find all hidden Portuguese words by dragging paths through adjacent letters.</p>
+          <p lang="pt-BR">Jogo de palavras diário em português.</p>
+          <p class="stack">react · typescript · firebase · python</p>
+        </li>
+        <li class="card p-olyrion">
+          <div class="preview">
+            <img src="assets/olyrion-coast.jpg" alt="">
+            <img class="mark" src="assets/olyrion-logo.png" alt="" style="width:52%">
+          </div>
+          <h3><a href="https://trialsofolyrion.com">trials-of-olyrion</a> <span class="st">closed beta</span></h3>
+          <p class="tag">Locations, crafted materials, and a sense of place sit at the heart of the experience.</p>
+          <p>Now playable in a small, invitation-based closed beta.</p>
+          <p class="stack">react · pixijs · tauri · fastapi · postgresql</p>
+        </li>
+        <li class="card p-deaddice">
+          <div class="preview" style="background:#1d2226">
+            <img class="pixel" src="assets/deaddice-keyart.png" alt="" style="object-position:56% 42%">
+            <img class="mark" src="assets/deaddice-logo.png" alt="" style="width:62%">
+          </div>
+          <h3>dead-dice <span class="st">coming soon</span></h3>
+          <p class="tag">Hunting things and rolling down.</p>
+          <p>A portrait pixel-art dice roguelike with extraction: village → expedition → extract or descend.</p>
+          <p class="stack">typescript · pixijs · capacitor · google play</p>
+        </li>
+      </ul>
+
+      <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~/studio</span> <span class="sym">$</span> ls open-source/</p>
+      <ul class="cards oss">
+        <li class="card p-heimdall">
+          <div class="preview icon" style="background:#16292b">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M4 32 C16 14 48 14 60 32 C48 50 16 50 4 32Z" fill="none" stroke="#5dffe9" stroke-width="3"/><circle cx="32" cy="32" r="10" fill="#5dffe9"/><circle cx="32" cy="32" r="4" fill="#16292b"/></svg>
+          </div>
+          <h3><a href="https://github.com/lcbcFoo/heimdall-mcp-server">heimdall-mcp-server</a> <span class="st">★ 105</span></h3>
+          <p class="tag">Your AI Coding Assistant's Long-Term Memory.</p>
+          <p>Heimdall gives your LLM a persistent, growing, cognitive memory of your specific codebase, lessons and memories carry over time.</p>
+          <p class="stack">python · mcp · qdrant · <span class="hl-cyan">pip install heimdall-mcp</span></p>
+        </li>
+        <li class="card p-reonv" id="reonv">
+          <div class="preview icon" style="background:#20291c">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="#b6ff5c" stroke-width="2.5"><path d="M20 6v8M28 6v8M36 6v8M44 6v8M20 50v8M28 50v8M36 50v8M44 50v8M6 20h8M6 28h8M6 36h8M6 44h8M50 20h8M50 28h8M50 36h8M50 44h8"/></g><rect x="14" y="14" width="36" height="36" rx="3" fill="#b6ff5c"/><text x="32" y="36" text-anchor="middle" font-family="Source Code Pro, monospace" font-size="9" font-weight="800" fill="#20291c">RV32I</text></svg>
+          </div>
+          <h3><a href="https://github.com/lcbcFoo/ReonV">ReonV</a> <span class="st">2018 · ★ 82</span></h3>
+          <p class="tag">One of the first RISC-V processors published from Brazil.</p>
+          <p>A modified version of the Leon3, a synthesisable VHDL model of a 32-bit processor originally compliant with the SPARC V8 architecture, now changed to RISC-V ISA.</p>
+          <p class="stack">vhdl · risc-v rv32i · grlib</p>
+        </li>
+      </ul>
+      <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~/studio</span> <span class="sym">$</span> <span class="blink" aria-hidden="true"></span></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Lucas Castro · lcbcFoo · this page wears <a href="https://github.com/lcbcFoo/foocolors.nvim">foocolors</a></span>
+  <span><a href="index.html">mockup B · all mockups</a></span>
+</footer>
+
+<nav class="bar" aria-label="Workspaces">
+  <div class="start">
+    <div class="pill ws">
+      <a href="#hello" class="on" data-ws="1">1<span>hello</span></a>
+      <a href="#work" data-ws="2">2<span>work</span></a>
+      <a href="#studio" data-ws="3">3<span>studio</span></a>
+    </div>
+    <span class="pill focused" id="focused"><b>nvim</b>~/hello.md</span>
+  </div>
+  <div class="mid"><span class="pill clock" id="clock">--</span></div>
+  <div class="end">
+    <span class="pill where">from <em>BR</em> · in <em>SV</em></span>
+    <span class="pill clock" id="clock-sm">--:--</span>
+    <span class="pill tray"><a href="https://github.com/lcbcFoo">github</a><a href="#linkedin">linkedin</a></span>
+  </div>
+</nav>
+
+<script>
+  // ironbar clock, Pacific time: "%a %d %b  %H:%M" on wide screens, "%H:%M" on phones.
+  const long = new Intl.DateTimeFormat('en-US', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Los_Angeles' });
+  const short = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Los_Angeles' });
+  const tick = () => {
+    const p = Object.fromEntries(long.formatToParts(new Date()).map(x => [x.type, x.value]));
+    document.getElementById('clock').textContent = `${p.weekday} ${p.day} ${p.month}  ${p.hour}:${p.minute} PT`;
+    document.getElementById('clock-sm').textContent = short.format(new Date());
+  };
+  tick(); setInterval(tick, 15000);
+
+  // Focus follows mouse: the hovered window gets the active border, its title goes to the bar,
+  // and its workspace lights up.
+  const wins = [...document.querySelectorAll('.win')];
+  const tabs = [...document.querySelectorAll('.ws a')];
+  const title = document.getElementById('focused');
+  const focusWin = win => {
+    if (!win || win.classList.contains('focus')) return;
+    wins.forEach(w => w.classList.toggle('focus', w === win));
+    const [app, ...rest] = win.dataset.title.split(' ');
+    title.innerHTML = '';
+    const b = document.createElement('b'); b.textContent = app;
+    title.append(b, rest.join(' '));
+    tabs.forEach(t => t.classList.toggle('on', t.dataset.ws === win.dataset.ws));
+  };
+  wins.forEach(w => {
+    w.addEventListener('mouseenter', () => focusWin(w));
+    w.addEventListener('focusin', () => focusWin(w));
+  });
+  tabs.forEach(t => t.addEventListener('click', () => focusWin(document.querySelector(t.getAttribute('href')))));
+
+  // Super+N muscle memory: plain 1 / 2 / 3 switch workspace.
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
+    const t = tabs.find(t => t.dataset.ws === e.key);
+    if (!t) return;
+    e.preventDefault();
+    const win = document.querySelector(t.getAttribute('href'));
+    focusWin(win);
+    win.scrollIntoView({ block: 'start' });
+  });
+
+  // On touch screens there is no hover, so the window crossing the middle of the screen takes focus.
+  if (matchMedia('(hover: none)').matches) {
+    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && focusWin(e.target)), { rootMargin: '-45% 0px -45% 0px' });
+    wins.forEach(w => io.observe(w));
+  }
+</script>
+</body>
+</html>

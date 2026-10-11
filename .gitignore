@@ -1,0 +1,12 @@
+# Deploy output and tooling
+dist/
+node_modules/
+.wrangler/
+__pycache__/
+
+# Editors and OS
+.DS_Store
+*.swp
+
+# Local-only notes for agents (private paths)
+.agents/local/

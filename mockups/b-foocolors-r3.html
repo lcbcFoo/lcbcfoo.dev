@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b1b1d">
+<title>Foocolors Desktop · lcbcfoo.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,800;1,400&family=Martian+Mono:wdth,wght@75..112.5,300..800&display=swap">
+<style>
+/* Layout: a Hyprland desktop painted in foocolors.nvim, one workspace on screen at a time.
+   1 hello: nvim hello.md · avatar · an `ls` terminal to navigate.
+   2 work:  nvim work.md with a cursorline that dims what you're not reading · a secure-boot diagram.
+   3 studio: a yazi-style browser, project list on the left, one project in focus on the right.
+   ironbar at the bottom. On desktops each workspace fills the screen and panes scroll; on phones
+   the current workspace scrolls as a normal page. Without JS everything is shown stacked. */
+:root {
+  --desk: #1b1b1d;
+  --bg: #212121;
+  --surface: #252529;
+  --surface-hi: #2d2b32;
+  --float: #28272c;
+  --status: #37333f;
+  --fg: #f0ebe8;
+  --fg-dim: #bbb4ba;
+  --quiet: #858289;
+  --line: #66636e;
+  --system: #8fa8bd;
+  --coral: #ff8f9e;
+  --lime: #b6ff5c;
+  --gold: #ffc95c;
+  --sky: #8fbdff;
+  --lilac: #ca9aff;
+  --cyan: #5dffe9;
+  --border-on: linear-gradient(45deg, rgb(51 204 255 / 0.93), rgb(0 255 153 / 0.93));
+  --border-off: rgb(89 89 89 / 0.67);
+  --mono: "Source Code Pro", "SauceCodePro Nerd Font", "DejaVu Sans Mono", ui-monospace, monospace;
+  --display: "Martian Mono", "Source Code Pro", ui-monospace, monospace;
+  --gap: 6px;
+  --bar-h: 32px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--desk);
+  color: var(--fg);
+  font: 400 0.95rem/1.65 var(--mono);
+  padding-inline: var(--gap);
+  padding-block: var(--gap) calc(var(--bar-h) + var(--gap) * 2 + env(safe-area-inset-bottom, 0px));
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 4px; }
+kbd { font: 600 0.72rem/1 var(--mono); color: var(--fg-dim); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 2px 5px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hl-lime { color: var(--lime); }
+.hl-gold { color: var(--gold); }
+.hl-sky { color: var(--sky); }
+.hl-coral { color: var(--coral); }
+.hl-cyan { color: var(--cyan); }
+.dim { color: var(--fg-dim); }
+.cmt { color: var(--quiet); font-style: italic; }
+.hint-touch { display: none; }
+@media (hover: none) { .hint-keys { display: none !important; } .hint-touch { display: block; } }
+
+/* ---------- workspaces ---------- */
+.desk { max-width: 1760px; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); overflow-x: clip; }
+.ws { display: grid; gap: var(--gap); min-height: 0; }
+.js .ws:not(.on) { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .ws.from-right { animation: from-right 220ms cubic-bezier(.2, .7, .2, 1); }
+  .js .ws.from-left { animation: from-left 220ms cubic-bezier(.2, .7, .2, 1); }
+  @keyframes from-right { from { transform: translateX(2.5%); opacity: 0.4; } }
+  @keyframes from-left { from { transform: translateX(-2.5%); opacity: 0.4; } }
+}
+
+#hello {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, min(440px, 50dvh));
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "buf pic" "buf nav";
+}
+#w-hello { grid-area: buf; }
+#w-pic { grid-area: pic; }
+#w-ls { grid-area: nav; }
+#work { grid-template-columns: minmax(0, 1fr) minmax(250px, 360px); grid-template-areas: "buf boot"; }
+#w-work { grid-area: buf; }
+#w-boot { grid-area: boot; }
+#studio { grid-template-columns: minmax(0, 1fr); }
+
+/* Desktop: the workspace is the screen, panes scroll inside it. */
+@media (min-width: 900px) and (min-height: 600px) {
+  .js body { height: 100dvh; overflow: hidden; }
+  .js .desk { height: calc(100dvh - var(--bar-h) - var(--gap) * 3 - env(safe-area-inset-bottom, 0px)); }
+  .js .ws.on { height: 100%; }
+  .js #work, .js #studio { grid-template-rows: minmax(0, 1fr); }
+  .js .scroll { overflow: auto; overscroll-behavior: contain; }
+}
+.scroll { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+
+/* ---------- windows ---------- */
+.win {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(var(--border-off), var(--border-off)) border-box;
+}
+.win.focus { background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--border-on) border-box; }
+.body { padding: 15px; flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+
+/* lualine-ish statusline */
+.statusline {
+  display: flex; flex-wrap: wrap; font-size: 0.72rem; line-height: 1.7;
+  background: var(--status); color: var(--fg-dim);
+  border-radius: 0 0 8px 8px; overflow: hidden; flex: none;
+}
+.statusline span { padding: 1px 10px; }
+.statusline .mode { background: var(--surface-hi); color: var(--quiet); font-weight: 800; }
+.win.focus .statusline .mode { background: var(--lime); color: var(--desk); }
+.statusline .fill { flex: 1; padding: 0; }
+.statusline .pos { background: var(--surface-hi); font-variant-numeric: tabular-nums; }
+
+/* ---------- nvim buffers ---------- */
+.buf { display: grid; }
+.row { display: grid; grid-template-columns: 3ch minmax(0, 1fr); column-gap: 1.6ch; border-radius: 4px; padding-right: 8px; }
+.js .row:not(.blank) { cursor: text; }
+.row .nr { color: var(--line); text-align: right; font-size: 0.8rem; line-height: 2.05; font-variant-numeric: tabular-nums; user-select: none; }
+.row.cur { background: var(--surface); }
+.row.cur .nr { color: var(--gold); font-weight: 600; }
+.row.blank { min-height: 1.65em; }
+.row .txt { min-width: 0; transition: opacity 180ms ease; }
+.row .txt > * { margin: 0; }
+.twilight .row.li:not(.lit) .txt { opacity: 0.42; }
+.eob { flex: 1; position: relative; min-height: 0; }
+.eob::before {
+  content: "~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A~\A";
+  position: absolute; inset: 0; overflow: hidden; white-space: pre; color: var(--line); padding-left: 1.4ch;
+}
+.js .eob { min-height: 3.3em; }
+
+/* hello.md */
+#w-hello .body { container-type: inline-size; padding-block: 16px 6px; }
+.h1 {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 112.5;
+  font-weight: 800;
+  font-size: clamp(2rem, 7cqi, 4.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--coral);
+  text-wrap: balance;
+}
+.h1 .hash { color: var(--line); font-weight: 300; }
+#w-hello .txt p { max-width: 62ch; font-size: clamp(1rem, 1.35vw, 1.2rem); line-height: 1.6; text-wrap: pretty; }
+.mdlinks { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.mdl { text-decoration: none; white-space: nowrap; }
+.mdl .b { color: var(--line); }
+.mdl .t { color: var(--sky); text-decoration: underline; text-underline-offset: 3px; }
+.mdl .u { color: var(--quiet); }
+.mdl:hover .t { color: var(--cyan); }
+
+/* work.md */
+#w-work .body { padding-bottom: 6px; }
+.md-h1 { color: var(--sky); font-weight: 800; font-size: 1.12rem; }
+.md-h2 { color: var(--lilac); font-weight: 600; font-size: 1rem; }
+.md-h1 .hash, .md-h2 .hash { color: var(--line); font-weight: 400; }
+.row.li .txt { display: grid; grid-template-columns: 2ch minmax(0, 1fr); max-width: 76ch; font-size: 1.02rem; padding-block: 1px; }
+.row.li .txt::before { content: "-"; color: var(--gold); }
+
+/* ---------- avatar ---------- */
+#w-pic { aspect-ratio: 1; }
+#w-pic .body { padding: 0; position: relative; }
+#w-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 32%; border-radius: 8px; }
+#w-pic figcaption { position: absolute; left: 8px; bottom: 8px; font-size: 0.7rem; background: rgb(27 27 29 / 0.84); color: var(--fg-dim); padding: 2px 8px; border-radius: 6px; }
+
+/* ---------- terminals ---------- */
+.prompt { margin: 0; color: var(--fg-dim); overflow-wrap: anywhere; }
+.prompt .u { color: var(--lime); }
+.prompt .h { color: var(--sky); }
+.prompt .cwd { color: var(--cyan); }
+.prompt .sym { color: var(--fg-dim); }
+.ls { list-style: none; margin: 6px 0 12px; padding: 0; display: grid; gap: 2px; }
+.ls .it, .ls .ent {
+  --c: var(--fg);
+  display: grid; grid-template-columns: 9ch minmax(0, 1fr) auto; gap: 12px; align-items: center;
+  padding: 5px 10px; border-radius: 6px; text-decoration: none;
+}
+.ls .nm { color: var(--c); font-weight: 600; }
+.ls .ds { color: var(--fg-dim); min-width: 0; }
+.ls .ent { color: var(--quiet); }
+.ls .ent .nm { color: var(--quiet); font-weight: 400; }
+.ls .ent .ds { color: var(--quiet); font-style: italic; }
+.ls .it:hover { background: var(--surface); }
+.ls .it.sel { background: var(--surface-hi); box-shadow: inset 3px 0 0 var(--c); }
+@media (hover: none) { .ls kbd { display: none; } }
+
+.diagram { margin: 12px 0; font: 400 0.92rem/1.35 var(--mono); color: var(--line); white-space: pre; overflow-x: auto; }
+.diagram .s { color: var(--fg); }
+.diagram .c { color: var(--coral); }
+.diagram .l { color: var(--lime); }
+.diagram .g { color: var(--gold); }
+.small { font-size: 0.86rem; margin: 0; }
+
+/* ---------- yazi ---------- */
+.yazi { overflow: hidden; }
+.yz-head { display: flex; gap: 0; align-items: center; padding: 6px 14px; border-bottom: 1px solid var(--surface-hi); font-size: 0.82rem; color: var(--fg-dim); flex: none; overflow: hidden; white-space: nowrap; }
+.yz-head .cwd { color: var(--cyan); }
+.yz-head .file { color: var(--fg); overflow: hidden; text-overflow: ellipsis; }
+.yz-cols { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(250px, 30%) minmax(0, 1fr); }
+.yz-list { border-right: 1px solid var(--surface-hi); padding: 6px 0 12px; min-height: 0; }
+.yz-list ul { list-style: none; margin: 0; padding: 0; }
+.yz-list .dir { padding: 12px 14px 3px; color: var(--sky); font-weight: 600; font-size: 0.8rem; }
+.yz-list .dir::before { content: "▾ "; color: var(--line); }
+.it { --c: var(--fg-dim); }
+.yz-list .it { display: grid; grid-template-columns: 2ch minmax(0, 1fr) auto; gap: 8px; padding: 3px 14px; text-decoration: none; color: var(--fg); }
+.yz-list .it .ic { color: var(--c); }
+.yz-list .it .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.yz-list .it .mt { color: var(--quiet); font-size: 0.76rem; align-self: center; }
+.yz-list .it:hover { background: var(--surface); }
+.yz-list .it.sel { background: var(--c); color: var(--desk); }
+.yz-list .it.sel .ic, .yz-list .it.sel .mt { color: var(--desk); }
+.yz-preview { min-width: 0; min-height: 0; }
+.yz-status { display: flex; flex-wrap: wrap; font-size: 0.72rem; line-height: 1.7; background: var(--status); color: var(--fg-dim); flex: none; border-radius: 0 0 8px 8px; overflow: hidden; }
+.yz-status span { padding: 1px 10px; }
+.yz-status .mode { background: var(--sky); color: var(--desk); font-weight: 800; }
+.yz-status .fill { flex: 1; padding: 0; }
+.yz-status .pos { background: var(--surface-hi); font-variant-numeric: tabular-nums; }
+
+.p-readme { --c: var(--fg-dim); }
+.p-letrado { --c: var(--sky); }
+.p-olyrion { --c: var(--gold); }
+.p-deaddice { --c: var(--coral); }
+.p-reonv { --c: var(--lime); }
+.p-heimdall { --c: var(--cyan); }
+.p-tinker { --c: var(--lilac); }
+
+.pv { --c: var(--fg); padding: 20px 24px 28px; display: grid; gap: 12px; align-content: start; max-width: 900px; }
+.pv + .pv { border-top: 1px solid var(--surface-hi); }
+.js .pv + .pv { border-top: 0; }
+.js .pv:not(.on) { display: none; }
+.pv h3 {
+  margin: 4px 0 0;
+  font-family: var(--display); font-variation-settings: "wdth" 100; font-weight: 800;
+  font-size: clamp(1.5rem, 2.3vw, 2.1rem); line-height: 1.1; letter-spacing: -0.02em;
+  color: var(--c); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+}
+.st { font: 400 0.76rem/1 var(--mono); letter-spacing: 0; color: var(--fg-dim); white-space: nowrap; }
+.st::before { content: "["; color: var(--line); }
+.st::after { content: "]"; color: var(--line); }
+.pv p { margin: 0; color: var(--fg-dim); max-width: 66ch; text-wrap: pretty; }
+.pv p.tag { color: var(--fg); font-size: 1.08rem; line-height: 1.55; }
+.pv .stack { color: var(--quiet); font-size: 0.82rem; }
+.open { display: inline-flex; align-items: center; gap: 10px; width: fit-content; margin-top: 4px; padding: 6px 12px; border: 1px solid var(--c); border-radius: 8px; color: var(--c); text-decoration: none; font-weight: 600; }
+.open:hover { background: var(--c); color: var(--desk); }
+.open:hover kbd { color: var(--desk); border-color: var(--desk); }
+.open.off { border-style: dashed; color: var(--fg-dim); font-weight: 400; }
+@media (hover: none) { .open kbd { display: none; } }
+
+.art { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: min(48dvh, 500px); border-radius: 8px; overflow: hidden; background: var(--surface-hi); }
+.art > img { width: 100%; height: 100%; object-fit: cover; }
+.art.contain > img { object-fit: contain; }
+.art .mark { position: absolute; left: 16px; bottom: 14px; height: auto; z-index: 1; }
+.art.shade::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(12 12 16 / 0.7), rgb(12 12 16 / 0) 50%); }
+.pixel { image-rendering: pixelated; }
+
+.thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.thumb { position: relative; display: block; aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden; background: var(--surface-hi); text-decoration: none; outline: 1px solid var(--surface-hi); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb span { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 10px 6px; font-size: 0.78rem; font-weight: 600; color: var(--c); background: linear-gradient(to top, rgb(12 12 16 / 0.85), rgb(12 12 16 / 0)); }
+.thumb:hover { outline-color: var(--c); }
+.tree { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 16px; margin: 4px 0 0; font-size: 0.9rem; }
+.tree dt { color: var(--sky); font-weight: 600; }
+.tree dd { margin: 0; color: var(--fg-dim); }
+
+.pipe { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; align-content: center; padding: 22px; background: #20291c; aspect-ratio: auto; }
+.pipe span { padding: 16px 0; text-align: center; border-radius: 6px; border: 1px solid #4d6b3c; color: var(--lime); font-weight: 600; font-size: 0.9rem; }
+.pipe small { grid-column: 1 / -1; color: #9db08f; font-size: 0.76rem; margin-top: 6px; }
+.code { background: #10191b; padding: 20px 22px; display: grid; gap: 10px; align-content: center; aspect-ratio: auto; }
+.code pre { margin: 0; font: 400 0.95rem/1.6 var(--mono); color: var(--cyan); white-space: pre-wrap; }
+.code pre span { color: var(--line); }
+.feats { display: flex; flex-wrap: wrap; gap: 6px; }
+.feats span { font-size: 0.78rem; padding: 2px 9px; border-radius: 6px; border: 1px solid var(--surface-hi); color: var(--fg-dim); }
+.swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; max-width: 560px; }
+.swatches span { display: grid; gap: 2px; padding: 34px 8px 6px; border-radius: 6px; font-size: 0.72rem; color: var(--desk); font-weight: 600; }
+.swatches span.dark { color: var(--fg-dim); outline: 1px solid var(--surface-hi); }
+
+/* ---------- which-key ---------- */
+.whichkey {
+  position: fixed; right: 12px; bottom: calc(var(--bar-h) + 14px + env(safe-area-inset-bottom, 0px)); z-index: 20;
+  width: min(340px, calc(100vw - 24px));
+  background: linear-gradient(var(--float), var(--float)) padding-box, var(--border-on) border-box;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.5);
+}
+.whichkey[hidden] { display: none; }
+.whichkey .body { padding: 14px 16px; gap: 10px; }
+.wk-title { margin: 0; color: var(--lilac); font-weight: 600; }
+.wk { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: 0.86rem; align-items: center; }
+.wk dt { display: flex; gap: 4px; }
+.wk dd { margin: 0; color: var(--fg-dim); }
+.whichkey .foot { display: flex; justify-content: space-between; gap: 12px; font-size: 0.78rem; margin: 0; }
+.whichkey .foot a { color: var(--fg-dim); }
+
+/* ---------- ironbar ---------- */
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  min-height: calc(var(--bar-h) + env(safe-area-inset-bottom, 0px));
+  padding: 3px 10px calc(3px + env(safe-area-inset-bottom, 0px));
+  background: rgb(27 27 29 / 0.96);
+  border-top: 1px solid var(--surface-hi);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 6px;
+  font-size: 0.82rem; color: var(--fg-dim);
+}
+.bar .start, .bar .end { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.bar .end { justify-content: flex-end; }
+.pill { background: var(--surface); border: 1px solid var(--surface-hi); border-radius: 8px; height: 26px; display: flex; align-items: center; white-space: nowrap; font: inherit; color: inherit; }
+.ws-tabs { padding: 2px 4px; gap: 4px; font-weight: 600; }
+.ws-tabs a { text-decoration: none; padding: 0 7px; min-width: 26px; text-align: center; border-radius: 7px; color: var(--quiet); line-height: 20px; transition: background 150ms ease-in-out, color 150ms ease-in-out; }
+.ws-tabs a:hover { color: var(--fg); background: var(--surface-hi); }
+.ws-tabs a.on { background: var(--lime); color: var(--bg); }
+.ws-tabs a span { font-weight: 400; margin-left: 5px; }
+.focused { padding: 0 10px; color: var(--fg); min-width: 0; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 24px; max-width: 36ch; }
+.focused b { color: var(--quiet); font-weight: 400; margin-right: 6px; }
+.clock { padding: 0 12px; color: var(--system); font-weight: 600; font-variant-numeric: tabular-nums; }
+.where { padding: 0 9px; color: var(--quiet); display: block; line-height: 24px; }
+.where em { font-style: normal; color: var(--fg-dim); }
+.keys { padding: 0 10px; cursor: pointer; color: var(--fg-dim); }
+.keys:hover, .keys[aria-expanded="true"] { color: var(--fg); background: var(--surface-hi); }
+.tray { padding: 0 4px; gap: 2px; }
+.tray a { text-decoration: none; padding: 0 7px; border-radius: 6px; line-height: 20px; color: var(--fg-dim); }
+.tray a:hover { background: var(--surface-hi); color: var(--fg); }
+.bar .end .clock { display: none; }
+
+/* ---------- reflow ---------- */
+@media (max-width: 1179px) {
+  .where { display: none; }
+  .yz-cols { grid-template-columns: minmax(230px, 34%) minmax(0, 1fr); }
+}
+@media (max-width: 899px) {
+  #hello { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: "pic" "buf" "nav"; }
+  #work { grid-template-columns: minmax(0, 1fr); grid-template-areas: "buf" "boot"; }
+  #w-pic { aspect-ratio: 16 / 10; }
+  .yz-cols { grid-template-columns: minmax(0, 1fr); }
+  .yz-list { border-right: 0; border-bottom: 1px solid var(--surface-hi); }
+  .pv { padding: 18px 15px 22px; }
+  .row { column-gap: 1.2ch; }
+  .bar { grid-template-columns: minmax(0, 1fr) auto; }
+  .bar .mid, .tray, .keys { display: none; }
+  .bar .end .clock { display: flex; }
+  .ws-tabs a span { display: none; }
+}
+@media (max-width: 520px) {
+  .ls .it, .ls .ent { grid-template-columns: 9ch minmax(0, 1fr); }
+  .ls kbd { display: none; }
+  .thumbs { grid-template-columns: minmax(0, 1fr); }
+  .thumb { aspect-ratio: 16 / 7; }
+  .pipe { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+
+<main class="desk">
+
+  <!-- ===================== 1 · hello ===================== -->
+  <section class="ws on" id="hello" aria-label="Workspace 1: hello">
+    <section class="win focus" id="w-hello" data-title="nvim ~/hello.md" data-primary aria-labelledby="hello-h">
+      <div class="body scroll">
+        <div class="buf" data-buf="hello">
+          <div class="row head cur" data-sec="top"><span class="nr">1</span><div class="txt"><h1 class="h1" id="hello-h"><span class="hash" aria-hidden="true"># </span>Hello there!</h1></div></div>
+          <div class="row blank"><span class="nr">2</span><div class="txt"></div></div>
+          <div class="row"><span class="nr">3</span><div class="txt"><p>My name is <span class="hl-coral">Lucas</span>, I am a computer engineer and hobbyist from <span class="hl-lime">Brazil</span>, living in the <span class="hl-sky">silicon valley</span> and working on GPU architecture at <span class="hl-lime">NVIDIA</span>.</p></div></div>
+          <div class="row blank"><span class="nr">4</span><div class="txt"></div></div>
+          <div class="row"><span class="nr">5</span><div class="txt"><p class="dim">I am easy-going and enjoy working with diverse people and environments.</p></div></div>
+          <div class="row blank"><span class="nr">6</span><div class="txt"></div></div>
+          <div class="row"><span class="nr">7</span><div class="txt"><p class="mdlinks">
+            <a class="mdl" href="https://github.com/lcbcFoo"><span class="b">[</span><span class="t">github</span><span class="b">](</span><span class="u">github.com/lcbcFoo</span><span class="b">)</span></a>
+            <a class="mdl" href="#linkedin"><span class="b">[</span><span class="t">linkedin</span><span class="b">](</span><span class="u">linkedin.com/in/…</span><span class="b">)</span></a>
+          </p></div></div>
+        </div>
+        <div class="eob" aria-hidden="true"></div>
+      </div>
+      <div class="statusline" aria-hidden="true"><span class="mode">NORMAL</span><span>hello.md</span><span class="fill"></span><span>utf-8</span><span>en · pt-BR</span><span class="pos" data-ln="hello">1:1</span></div>
+    </section>
+
+    <figure class="win" id="w-pic" data-title="kitty me.jpg">
+      <div class="body">
+        <img src="assets/avatar.jpg" alt="Lucas's profile picture: a black and white border collie smiling on a sunny street">
+        <figcaption>me.jpg · 460×460</figcaption>
+      </div>
+    </figure>
+
+    <section class="win" id="w-ls" data-title="kitty ~" aria-label="Where to next">
+      <div class="body scroll">
+        <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~</span> <span class="sym">$</span> ls</p>
+        <ul class="ls" data-list="ls">
+          <li><span class="ent"><span class="nm">hello.md</span><span class="ds">you are here</span></span></li>
+          <li><a class="it sel" href="#work" style="--c: var(--sky)"><span class="nm">work.md</span><span class="ds">what I work on</span><kbd>2</kbd></a></li>
+          <li><a class="it" href="#studio" style="--c: var(--cyan)"><span class="nm">studio/</span><span class="ds">my hobbies and projects</span><kbd>3</kbd></a></li>
+        </ul>
+        <p class="cmt hint-keys"># j/k to move · ↵ to open · ? for all keys</p>
+        <p class="cmt hint-touch"># tap to open</p>
+      </div>
+    </section>
+  </section>
+
+  <!-- ===================== 2 · work ===================== -->
+  <section class="ws" id="work" aria-label="Workspace 2: work">
+    <section class="win" id="w-work" data-title="nvim ~/work.md" data-primary aria-labelledby="work-h">
+      <div class="body scroll">
+        <div class="buf" data-buf="work">
+          <div class="row head cur" data-sec="top"><span class="nr">1</span><div class="txt"><h2 class="md-h1" id="work-h"><span class="hash"># </span>What I work on</h2></div></div>
+          <div class="row blank"><span class="nr">2</span><div class="txt"></div></div>
+          <div class="row head" data-sec="now"><span class="nr">3</span><div class="txt"><h3 class="md-h2"><span class="hash">## </span>Now</h3></div></div>
+          <div class="row li" data-sec="now"><span class="nr">4</span><div class="txt"><p><span><span class="hl-gold">Senior GPU Architect</span> with over 7 years of experience in system architecture for ASIC, GPU, and SoC devices for both graphics and AI/ML workloads.</span></p></div></div>
+          <div class="row li" data-sec="now"><span class="nr">5</span><div class="txt"><p><span>Currently architecting the <span class="hl-lime">secure boot of NVIDIA GPUs</span> (Blackwell, Rubin, and next gens), coordinating across many hardware, firmware, and software teams to deliver a secure initialization of the system, from power-up to SW.</span></p></div></div>
+          <div class="row blank"><span class="nr">6</span><div class="txt"></div></div>
+          <div class="row head" data-sec="before"><span class="nr">7</span><div class="txt"><h3 class="md-h2"><span class="hash">## </span>Before</h3></div></div>
+          <div class="row li" data-sec="before"><span class="nr">8</span><div class="txt"><p><span>I have also worked <span class="hl-gold">5 years</span> developing embedded solutions and hardware-software co-design projects for photonic devices at <span class="hl-sky">Lumentum/Idea</span>.</span></p></div></div>
+          <div class="row li" data-sec="before"><span class="nr">9</span><div class="txt"><p><span>Master in Computer Science by <span class="hl-sky">UNICAMP</span>, with a specialization in Computer Architecture and Energy Efficiency.</span></p></div></div>
+          <div class="row li" data-sec="before"><span class="nr">10</span><div class="txt"><p><span>Creator of <a class="hl-lime" href="#studio/reonv">ReonV</a> (2018), one of the first RISC-V processors published from Brazil.</span></p></div></div>
+        </div>
+        <div class="eob" aria-hidden="true"></div>
+      </div>
+      <div class="statusline" aria-hidden="true"><span class="mode">NORMAL</span><span>work.md</span><span class="fill"></span><span class="hint-keys">j/k to read</span><span>markdown</span><span class="pos" data-ln="work">1:1</span></div>
+    </section>
+
+    <section class="win" id="w-boot" data-title="kitty secure-boot.txt" aria-label="Secure boot, from power-up to SW">
+      <div class="body scroll">
+        <p class="prompt"><span class="u">lucas</span>@<span class="h">arch</span> <span class="cwd">~/work</span> <span class="sym">$</span> cat secure-boot.txt</p>
+<pre class="diagram" aria-hidden="true"><span class="g">Blackwell · Rubin · next gens</span>
+
+┌──────────────┐
+│   <span class="c">power-up</span>   │
+└──────┬───────┘
+       │
+┌──────┴───────┐
+│   <span class="s">hardware</span>   │
+└──────┬───────┘
+       │
+┌──────┴───────┐
+│   <span class="s">firmware</span>   │
+└──────┬───────┘
+       │
+┌──────┴───────┐
+│      <span class="l">SW</span>      │
+└──────────────┘</pre>
+        <p class="small dim">A secure initialization of the system, from power-up to SW, across many hardware, firmware, and software teams.</p>
+      </div>
+    </section>
+  </section>
+
+  <!-- ===================== 3 · studio ===================== -->
+  <section class="ws" id="studio" aria-label="Workspace 3: studio">
+    <section class="win yazi" id="w-yazi" data-title="yazi ~/studio" data-primary aria-labelledby="studio-h">
+      <h2 class="sr-only" id="studio-h">My hobbies and projects</h2>
+      <div class="yz-head"><span class="cwd">~/studio/</span><span class="file" id="yz-path">README.md</span></div>
+      <div class="yz-cols">
+        <nav class="yz-list scroll" aria-label="Projects">
+          <ul data-list="yazi">
+            <li><a class="it p-readme sel" href="#studio/readme" data-key="readme" data-path="README.md"><span class="ic">i</span><span class="nm">README.md</span><span class="mt"></span></a></li>
+            <li class="dir">games/</li>
+            <li><a class="it p-letrado" href="#studio/letrado" data-key="letrado" data-path="games/letrado.app"><span class="ic">●</span><span class="nm">letrado.app</span><span class="mt">live</span></a></li>
+            <li><a class="it p-olyrion" href="#studio/olyrion" data-key="olyrion" data-path="games/trials-of-olyrion"><span class="ic">●</span><span class="nm">trials-of-olyrion</span><span class="mt">beta</span></a></li>
+            <li><a class="it p-deaddice" href="#studio/deaddice" data-key="deaddice" data-path="games/dead-dice"><span class="ic">●</span><span class="nm">dead-dice</span><span class="mt">soon</span></a></li>
+            <li class="dir">open-source/</li>
+            <li><a class="it p-reonv" href="#studio/reonv" data-key="reonv" data-path="open-source/ReonV"><span class="ic">●</span><span class="nm">ReonV</span><span class="mt">★ 82</span></a></li>
+            <li><a class="it p-heimdall" href="#studio/heimdall" data-key="heimdall" data-path="open-source/heimdall-mcp-server"><span class="ic">●</span><span class="nm">heimdall-mcp-server</span><span class="mt">★ 105</span></a></li>
+            <li class="dir">tinkering/</li>
+            <li><a class="it p-tinker" href="#studio/foocolors" data-key="foocolors" data-path="tinkering/foocolors.nvim"><span class="ic">·</span><span class="nm">foocolors.nvim</span><span class="mt">lua</span></a></li>
+            <li><a class="it p-tinker" href="#studio/gputop" data-key="gputop" data-path="tinkering/ironbar-gpu-top"><span class="ic">·</span><span class="nm">ironbar-gpu-top</span><span class="mt">sh</span></a></li>
+            <li><a class="it p-tinker" href="#studio/circuitly" data-key="circuitly" data-path="tinkering/circuitly"><span class="ic">·</span><span class="nm">circuitly</span><span class="mt">js</span></a></li>
+            <li><a class="it p-tinker" href="#studio/menes" data-key="menes" data-path="tinkering/meNES"><span class="ic">·</span><span class="nm">meNES</span><span class="mt">asm</span></a></li>
+          </ul>
+        </nav>
+
+        <div class="yz-preview scroll" id="yz-preview">
+          <article class="pv p-readme on" id="studio/readme" data-key="readme">
+            <h3>~/studio</h3>
+            <p class="tag">Hobbyist with several projects in GitHub exploring ML, LLM, optimization problems, games, full stack apps.</p>
+            <div class="thumbs">
+              <a class="thumb p-letrado" href="#studio/letrado" data-go="letrado" style="background:#1c1530"><img src="assets/letrado-frame.png" alt="" style="object-position:50% 42%"><span>letrado.app</span></a>
+              <a class="thumb p-olyrion" href="#studio/olyrion" data-go="olyrion"><img src="assets/olyrion-coast.jpg" alt=""><span>trials-of-olyrion</span></a>
+              <a class="thumb p-deaddice" href="#studio/deaddice" data-go="deaddice"><img class="pixel" src="assets/deaddice-keyart.png" alt="" style="object-position:56% 42%"><span>dead-dice</span></a>
+            </div>
+            <dl class="tree">
+              <dt>games/</dt><dd>letrado.app · trials-of-olyrion · dead-dice</dd>
+              <dt>open-source/</dt><dd>ReonV · heimdall-mcp-server</dd>
+              <dt>tinkering/</dt><dd>foocolors.nvim · ironbar-gpu-top · circuitly · meNES</dd>
+            </dl>
+            <p class="cmt hint-keys"># j/k to browse · ↵ to open</p>
+            <p class="cmt hint-touch"># tap a project to open it</p>
+          </article>
+
+          <article class="pv p-letrado" id="studio/letrado" data-key="letrado">
+            <div class="art contain" style="background:#1c1530"><img src="assets/letrado-frame.png" alt="Letrado's daily 5×5 letter grid"></div>
+            <h3>letrado.app <span class="st">live</span></h3>
+            <p class="tag">A daily word puzzle game where players find all hidden Portuguese words by dragging paths through adjacent letters.</p>
+            <p lang="pt-BR">Jogo de palavras diário em português.</p>
+            <p class="stack">react · typescript · vite · firebase · python</p>
+            <a class="open" href="https://letrado.app" target="_blank" rel="noopener">open letrado.app <kbd>↵</kbd></a>
+          </article>
+
+          <article class="pv p-olyrion" id="studio/olyrion" data-key="olyrion">
+            <div class="art shade"><img src="assets/olyrion-coast.jpg" alt="The Ionian coast of Olyrion: olive trees, a stone path and a turquoise bay"><img class="mark" src="assets/olyrion-logo.png" alt="Trials of Olyrion" style="width:min(300px, 46%)"></div>
+            <h3>trials-of-olyrion <span class="st">closed beta</span></h3>
+            <p class="tag">Locations, crafted materials, and a sense of place sit at the heart of the experience.</p>
+            <p>Trials of Olyrion is now playable in a small, invitation-based closed beta. The hosted client is running at play.trialsofolyrion.com for invited players.</p>
+            <p class="stack">react · pixijs · tauri · fastapi · postgresql · redis</p>
+            <a class="open" href="https://trialsofolyrion.com" target="_blank" rel="noopener">open trialsofolyrion.com <kbd>↵</kbd></a>
+          </article>
+
+          <article class="pv p-deaddice" id="studio/deaddice" data-key="deaddice">
+            <div class="art shade" style="background:#1d2226"><img class="pixel" src="assets/deaddice-keyart.png" alt="Dead Dice key art: a party of five pixel-art heroes descending a well in a rope lift, dice tumbling around them" style="object-position:56% 40%"><img class="mark" src="assets/deaddice-logo.png" alt="Dead Dice" style="width:273px; max-width:52%"></div>
+            <h3>dead-dice <span class="st">coming soon</span></h3>
+            <p class="tag">Hunting things and rolling down.</p>
+            <p lang="pt-BR">Caçando bicho e rolando buraco abaixo.</p>
+            <p>A portrait pixel-art dice roguelike with extraction: village → expedition → extract or descend. A fixed party of five climbs dungeons of four floors, each a branching map ending in a boss checkpoint.</p>
+            <p class="stack">typescript · pixijs · vite · capacitor · Foo Game Studios</p>
+            <span class="open off">coming soon to Google Play</span>
+          </article>
+
+          <article class="pv p-reonv" id="studio/reonv" data-key="reonv">
+            <div class="art pipe" aria-label="Leon3's 7-stage integer pipeline">
+              <span>FE</span><span>DE</span><span>RA</span><span>EX</span><span>ME</span><span>XC</span><span>WR</span>
+              <small>7-stage integer pipeline · lib/gaisler/leon3v3/iu3.vhd</small>
+            </div>
+            <h3>ReonV <span class="st">2018 · ★ 82</span></h3>
+            <p class="tag">One of the first RISC-V processors published from Brazil.</p>
+            <p>ReonV is a modified version of the Leon3, a synthesisable VHDL model of a 32-bit processor originally compliant with the SPARC V8 architecture, now changed to RISC-V ISA. ReonV changed the Leon3 7-stage integer pipeline from SPARC to RISC-V, maintaining all other IP cores and resources provided by GRLIB IP Library untouched.</p>
+            <p class="stack">vhdl · risc-v rv32i · grlib · fpga</p>
+            <a class="open" href="https://github.com/lcbcFoo/ReonV" target="_blank" rel="noopener">open on github <kbd>↵</kbd></a>
+          </article>
+
+          <article class="pv p-heimdall" id="studio/heimdall" data-key="heimdall">
+            <div class="art code">
+              <pre><span>$</span> pip install heimdall-mcp
+<span>$</span> heimdall project init</pre>
+            </div>
+            <h3>heimdall-mcp-server <span class="st">★ 105</span></h3>
+            <p class="tag">Your AI Coding Assistant's Long-Term Memory.</p>
+            <p>Heimdall gives your LLM a persistent, growing, cognitive memory of your specific codebase, lessons and memories carry over time.</p>
+            <div class="feats"><span>Context-Rich Memory</span><span>Git-Aware Context</span><span>Isolated &amp; Organized</span><span>Efficient Integration</span></div>
+            <p class="stack">python · mcp · qdrant</p>
+            <a class="open" href="https://github.com/lcbcFoo/heimdall-mcp-server" target="_blank" rel="noopener">open on github <kbd>↵</kbd></a>
+          </article>
+
+          <article class="pv p-tinker" id="studio/foocolors" data-key="foocolors">
+            <h3>foocolors.nvim</h3>
+            <p class="tag">A dark, high-contrast pastel-neon colorscheme for Neovim.</p>
+            <p>This page wears it.</p>
+            <div class="swatches" aria-hidden="true">
+              <span class="dark" style="background:#212121">bg<br>#212121</span>
+              <span style="background:#f0ebe8">fg<br>#f0ebe8</span>
+              <span style="background:#ff8f9e">coral<br>#ff8f9e</span>
+              <span style="background:#b6ff5c">lime<br>#b6ff5c</span>
+              <span style="background:#ffc95c">gold<br>#ffc95c</span>
+              <span style="background:#8fbdff">sky<br>#8fbdff</span>
+              <span style="background:#ca9aff">lilac<br>#ca9aff</span>
+              <span style="background:#5dffe9">cyan<br>#5dffe9</span>
+            </div>
+            <p class="stack">lua · neovim</p>
+            <a class="open" href="https://github.com/lcbcFoo/foocolors.nvim" target="_blank" rel="noopener">open on github <kbd>↵</kbd></a>
+          </article>
+
+          <article class="pv p-tinker" id="studio/gputop" data-key="gputop">
+            <h3>ironbar-gpu-top</h3>
+            <p class="tag">Compact nvtop-inspired NVIDIA monitor module for Ironbar.</p>
+            <p class="stack">shell · ironbar</p>
+            <a class="open" href="https://github.com/lcbcFoo/ironbar-gpu-top" target="_blank" rel="noopener">open on github <kbd>↵</kbd></a>
+          </article>
+
+          <article class="pv p-tinker" id="studio/circuitly" data-key="circuitly">
+            <h3>circuitly <span class="st">★ 10</span></h3>
+            <p class="tag">A visual and constructive framework for teaching digital circuits.</p>
+            <p class="stack">javascript · circuitly.app</p>
+            <a class="open" href="https://github.com/lcbcFoo/circuitly" target="_blank" rel="noopener">open on github <kbd>↵</kbd></a>
+          </article>
+
+          <article class="pv p-tinker" id="studio/menes" data-key="menes">
+            <h3>meNES</h3>
+            <p class="tag">My Emulator of NES.</p>
+            <p class="stack">assembly</p>
+            <a class="open" href="https://github.com/lcbcFoo/meNES" target="_blank" rel="noopener">open on github <kbd>↵</kbd></a>
+          </article>
+        </div>
+      </div>
+      <div class="yz-status" aria-hidden="true"><span class="mode">NOR</span><span>drwxr-xr-x</span><span class="fill"></span><span class="hint-keys">j/k · ↵</span><span class="pos" id="yz-pos">1/10</span></div>
+    </section>
+  </section>
+</main>
+
+<div class="win whichkey" id="help" role="dialog" aria-label="Keyboard shortcuts" hidden>
+  <div class="body">
+    <p class="wk-title">keys</p>
+    <dl class="wk">
+      <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></dt><dd>switch workspace</dd>
+      <dt><kbd>j</kbd><kbd>k</kbd></dt><dd>move down / up (or arrows)</dd>
+      <dt><kbd>↵</kbd></dt><dd>open</dd>
+      <dt><kbd>g</kbd><kbd>G</kbd></dt><dd>first / last</dd>
+      <dt><kbd>?</kbd></dt><dd>show / hide this</dd>
+      <dt><kbd>esc</kbd></dt><dd>close</dd>
+    </dl>
+    <p class="foot"><span class="cmt">the mouse works too</span><a href="index.html">all mockups</a></p>
+  </div>
+</div>
+
+<nav class="bar" aria-label="Workspaces">
+  <div class="start">
+    <div class="pill ws-tabs">
+      <a href="#hello" class="on" data-ws="hello">1<span>hello</span></a>
+      <a href="#work" data-ws="work">2<span>work</span></a>
+      <a href="#studio" data-ws="studio">3<span>studio</span></a>
+    </div>
+    <span class="pill focused" id="focused"><b>nvim</b>~/hello.md</span>
+  </div>
+  <div class="mid"><span class="pill clock" id="clock">--</span></div>
+  <div class="end">
+    <span class="pill where">from <em>BR</em> · in <em>SV</em></span>
+    <button class="pill keys" id="keys-btn" type="button" aria-controls="help" aria-expanded="false">? keys</button>
+    <span class="pill clock" id="clock-sm">--:--</span>
+    <span class="pill tray"><a href="https://github.com/lcbcFoo">github</a><a href="#linkedin">linkedin</a></span>
+  </div>
+</nav>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  root.classList.add('js');
+  const canHover = matchMedia('(hover: hover)').matches;
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fixedMode = () => matchMedia('(min-width: 900px) and (min-height: 600px)').matches;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  let current = null;
+
+  // ---------- ironbar clock (Pacific time, "%a %d %b  %H:%M") ----------
+  const long = new Intl.DateTimeFormat('en-US', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Los_Angeles' });
+  const tick = () => {
+    const p = Object.fromEntries(long.formatToParts(new Date()).map(x => [x.type, x.value]));
+    $('#clock').textContent = `${p.weekday} ${p.day} ${p.month}  ${p.hour}:${p.minute} PT`;
+    $('#clock-sm').textContent = `${p.hour}:${p.minute}`;
+  };
+  tick(); setInterval(tick, 20000);
+
+  // ---------- window focus (focus follows mouse, title goes to the bar) ----------
+  const wins = $$('.desk .win');
+  const title = $('#focused');
+  const focusWin = w => {
+    if (!w) return;
+    wins.forEach(x => x.classList.toggle('focus', x === w));
+    const [app, ...rest] = w.dataset.title.split(' ');
+    const b = document.createElement('b'); b.textContent = app;
+    title.replaceChildren(b, rest.join(' '));
+  };
+  if (canHover) wins.forEach(w => w.addEventListener('mouseenter', () => focusWin(w)));
+
+  const reveal = (el, scroll) => { if (scroll) el.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); };
+
+  // ---------- nvim buffers: cursorline, relative numbers, twilight ----------
+  const makeBuf = (el, { twilight }) => {
+    if (twilight && canHover) el.classList.add('twilight');
+    const rows = $$('.row', el);
+    const nav = rows.filter(r => !r.classList.contains('blank'));
+    const pos = $(`[data-ln="${el.dataset.buf}"]`);
+    let cur = nav[0];
+    const set = (r, scroll) => {
+      cur = r;
+      const ci = rows.indexOf(r);
+      rows.forEach((x, k) => {
+        x.classList.toggle('cur', x === r);
+        x.querySelector('.nr').textContent = x === r ? k + 1 : Math.abs(k - ci);
+      });
+      const head = r.classList.contains('head');
+      const sec = r.dataset.sec;
+      rows.forEach(x => x.classList.toggle('lit', x === r || (head && (sec === 'top' || x.dataset.sec === sec))));
+      if (pos) pos.textContent = `${ci + 1}:1`;
+      reveal(r, scroll);
+    };
+    nav.forEach(r => r.addEventListener('click', e => { if (!e.target.closest('a')) set(r); }));
+    set(cur, false);
+    return {
+      move: d => set(nav[Math.max(0, Math.min(nav.length - 1, nav.indexOf(cur) + d))], true),
+      first: () => set(nav[0], true),
+      last: () => set(nav[nav.length - 1], true),
+      open: () => { const a = cur.querySelector('a'); if (a) a.click(); },
+    };
+  };
+  makeBuf($('[data-buf="hello"]'), { twilight: false });
+  const workBuf = makeBuf($('[data-buf="work"]'), { twilight: true });
+
+  // ---------- selectable lists (the `ls` terminal and yazi) ----------
+  const makeList = (el, onSelect) => {
+    const items = $$('.it', el);
+    let i = Math.max(0, items.findIndex(x => x.classList.contains('sel')));
+    const set = (n, scroll) => {
+      i = Math.max(0, Math.min(items.length - 1, n));
+      items.forEach((x, k) => {
+        x.classList.toggle('sel', k === i);
+        if (k === i) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current');
+      });
+      reveal(items[i], scroll);
+      if (onSelect) onSelect(items[i], i, items.length, scroll);
+    };
+    return {
+      items, set,
+      get i() { return i; },
+      move: d => set(i + d, true),
+      first: () => set(0, true),
+      last: () => set(items.length - 1, true),
+    };
+  };
+
+  const ls = makeList($('[data-list="ls"]'));
+  ls.open = () => ls.items[ls.i].click();
+  if (canHover) ls.items.forEach((a, k) => a.addEventListener('mouseenter', () => ls.set(k, false)));
+
+  const preview = $('#yz-preview');
+  const yz = makeList($('[data-list="yazi"]'), (item, i, n, scroll) => {
+    const key = item.dataset.key;
+    $$('.pv', preview).forEach(p => p.classList.toggle('on', p.dataset.key === key));
+    $('#yz-path').textContent = item.dataset.path;
+    $('#yz-pos').textContent = `${i + 1}/${n}`;
+    preview.scrollTop = 0;
+    const hash = '#studio/' + key;
+    if (current === 'studio' && location.hash !== hash) history.replaceState(null, '', hash);
+    if (scroll && !fixedMode()) preview.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+  yz.select = (key, scroll) => {
+    const k = yz.items.findIndex(x => x.dataset.key === key);
+    yz.set(k < 0 ? 0 : k, scroll);
+  };
+  yz.open = () => {
+    if (yz.items[yz.i].dataset.key === 'readme') { yz.move(1); return; }
+    const a = $('.pv.on a.open', preview);
+    if (a) a.click();
+  };
+  // Selecting in yazi replaces the URL instead of stacking history entries.
+  yz.items.forEach((a, k) => a.addEventListener('click', e => { e.preventDefault(); yz.set(k, true); }));
+  $$('[data-go]', preview).forEach(a => a.addEventListener('click', e => { e.preventDefault(); yz.select(a.dataset.go, true); }));
+
+  // ---------- workspaces ----------
+  const ORDER = ['hello', 'work', 'studio'];
+  const tabs = $$('.ws-tabs a');
+  const show = (name, animate) => {
+    if (current === name) return;
+    const dir = current ? Math.sign(ORDER.indexOf(name) - ORDER.indexOf(current)) : 0;
+    ORDER.forEach(n => {
+      const el = document.getElementById(n);
+      el.classList.toggle('on', n === name);
+      el.classList.remove('from-left', 'from-right');
+    });
+    const el = document.getElementById(name);
+    if (animate && dir) { void el.offsetWidth; el.classList.add(dir > 0 ? 'from-right' : 'from-left'); }
+    tabs.forEach(t => t.classList.toggle('on', t.dataset.ws === name));
+    current = name;
+    focusWin($('.win[data-primary]', el));
+    window.scrollTo(0, 0);
+  };
+  const route = e => {
+    const [name, key] = location.hash.slice(1).split('/');
+    if (!ORDER.includes(name)) { if (!e) show('hello', false); return; }
+    show(name, !!e);
+    if (name === 'studio') yz.select(key || 'readme', !!e && !!key);
+  };
+  addEventListener('hashchange', route);
+  route();
+  // The browser jumps to #hello / #work / #studio on load; the workspace already shows it.
+  if (location.hash) requestAnimationFrame(() => window.scrollTo(0, 0));
+
+  // ---------- which-key ----------
+  const help = $('#help');
+  const keysBtn = $('#keys-btn');
+  const toggleHelp = force => {
+    const open = force === undefined ? help.hidden : force;
+    help.hidden = !open;
+    keysBtn.setAttribute('aria-expanded', String(open));
+  };
+  keysBtn.addEventListener('click', () => toggleHelp());
+
+  // ---------- keys ----------
+  const navFor = { hello: ls, work: workBuf, studio: yz };
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key;
+    if (k === '?') { e.preventDefault(); toggleHelp(); return; }
+    if (k === 'Escape') { toggleHelp(false); return; }
+    if (k === '1' || k === '2' || k === '3') { e.preventDefault(); location.hash = '#' + ORDER[+k - 1]; return; }
+    const nav = navFor[current];
+    if (!nav) return;
+    const onControl = e.target.closest && e.target.closest('a, button');
+    if (k === 'j' || k === 'ArrowDown') { e.preventDefault(); nav.move(1); }
+    else if (k === 'k' || k === 'ArrowUp') { e.preventDefault(); nav.move(-1); }
+    else if (k === 'g') nav.first();
+    else if (k === 'G') nav.last();
+    else if ((k === 'Enter' || k === 'l' || k === 'ArrowRight') && !onControl) { e.preventDefault(); nav.open(); }
+  });
+})();
+</script>
+</body>
+</html>

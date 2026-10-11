@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Collie Studio · lcbcfoo.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a big photo-led hello, then two clearly separated chapters. "What I work on" is calm and
+   text-led; "My hobbies" is a studio shelf where every project tile keeps its own game's colors.
+   Site chrome takes its palette from the avatar: collie black and white, tongue pink, sky blue. */
+:root {
+  --paper: #f6f7f5;
+  --card: #ffffff;
+  --ink: #15171a;
+  --muted: #5b6168;
+  --line: #dcdfdf;
+  --tongue: #c9405d;
+  --sky: #3f7fc0;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --gutter: clamp(16px, 4.5vw, 64px);
+  --max: 1180px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111315; --card: #191c1f; --ink: #f1f1ee; --muted: #9ba2a9; --line: #2a2e33;
+    --tongue: #ff7d95; --sky: #82b6ea; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111315; --card: #191c1f; --ink: #f1f1ee; --muted: #9ba2a9; --line: #2a2e33;
+  --tongue: #ff7d95; --sky: #82b6ea; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  padding-inline: var(--gutter);
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:focus-visible { outline: 2px solid var(--tongue); outline-offset: 3px; border-radius: 3px; }
+.wrap { max-width: var(--max); margin-inline: auto; }
+.label { font: 500 0.74rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0; }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 22px; flex-wrap: wrap; }
+.wordmark { font: 700 1.15rem/1 var(--display); font-variation-settings: "opsz" 24; letter-spacing: -0.02em; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.wordmark i { width: 10px; height: 10px; border-radius: 50%; background: var(--tongue); display: inline-block; }
+.top nav { display: flex; gap: 22px; font-size: 0.95rem; flex-wrap: wrap; }
+.top nav a { text-decoration: none; color: var(--muted); }
+.top nav a:hover { color: var(--ink); }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: center; padding-block: clamp(24px, 5vw, 64px) clamp(48px, 7vw, 96px); }
+.photo { position: relative; max-width: 440px; width: 100%; justify-self: center; }
+.photo img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 36% 64% 58% 42% / 44% 40% 60% 56%; }
+.photo .sticker {
+  position: absolute; right: -6px; bottom: 8%;
+  background: var(--ink); color: var(--paper);
+  font: 500 0.78rem/1.3 var(--mono);
+  padding: 8px 12px; border-radius: 999px; transform: rotate(-4deg);
+}
+h1 {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 96, "wdth" 92;
+  font-weight: 800;
+  font-size: clamp(3.4rem, 8.4vw, 7.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  margin: 0 0 24px;
+  text-wrap: balance;
+}
+h1 span { color: var(--tongue); }
+.intro { display: grid; gap: 14px; max-width: 46ch; }
+.intro p { margin: 0; font-size: clamp(1.08rem, 1.5vw, 1.28rem); line-height: 1.55; text-wrap: pretty; }
+.intro p + p { color: var(--muted); }
+.doors { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.door { display: inline-flex; align-items: center; gap: 12px; padding: 12px 18px 12px 14px; border-radius: 14px; border: 1.5px solid var(--ink); text-decoration: none; font-weight: 600; }
+.door small { display: block; font: 400 0.72rem/1.2 var(--mono); color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.door .n { font: 500 0.8rem/1 var(--mono); width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; background: var(--ink); color: var(--paper); }
+.door.alt .n { background: var(--tongue); color: var(--card); }
+.door:hover { background: var(--card); }
+
+/* Chapters */
+.chapter { border-top: 1.5px solid var(--ink); padding-block: 28px clamp(56px, 8vw, 104px); }
+.chapter-head { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 16px clamp(24px, 5vw, 72px); align-items: start; margin-bottom: clamp(28px, 4vw, 48px); }
+h2 { font-family: var(--display); font-variation-settings: "opsz" 72, "wdth" 92; font-weight: 750; font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 0.95; letter-spacing: -0.025em; margin: 10px 0 0; text-wrap: balance; }
+.chapter-head .lead { margin: 10px 0 0; font-size: clamp(1.1rem, 1.6vw, 1.35rem); line-height: 1.5; max-width: 52ch; text-wrap: pretty; }
+
+/* Work */
+.work-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 16px clamp(24px, 5vw, 72px); }
+.role { font-family: var(--display); font-variation-settings: "opsz" 36; font-weight: 700; font-size: 1.6rem; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+.role small { display: block; font: 400 1rem/1.4 var(--body); color: var(--muted); letter-spacing: 0; margin-top: 6px; }
+.boot { margin-top: 22px; display: grid; gap: 6px; }
+.boot ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: 500 0.82rem/1 var(--mono); }
+.boot li { padding: 8px 10px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); }
+.boot li.arrow { padding: 0; border: none; background: none; color: var(--muted); }
+.boot li:first-child { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.boot li:last-child { background: var(--sky); color: var(--card); border-color: var(--sky); }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; }
+.timeline li { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 16px; padding-block: 18px; border-top: 1px solid var(--line); }
+.timeline li:last-child { border-bottom: 1px solid var(--line); }
+.timeline .when { font: 500 0.76rem/1.9 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.timeline .when b { color: var(--tongue); font-weight: 500; }
+.timeline h3 { margin: 0; font-size: 1.1rem; font-weight: 600; line-height: 1.4; }
+.timeline p { margin: 4px 0 0; color: var(--muted); }
+
+/* Studio shelf */
+.shelf { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
+.tile { position: relative; border-radius: 22px; overflow: hidden; min-width: 0; display: flex; flex-direction: column; isolation: isolate; text-decoration: none; }
+.tile:focus-visible { outline: 3px solid var(--tongue); outline-offset: 3px; }
+.tile .art { position: absolute; inset: 0; z-index: -1; }
+.tile .art img { width: 100%; height: 100%; object-fit: cover; }
+.tile .copy { margin-top: auto; padding: clamp(18px, 2.4vw, 28px); display: grid; gap: 8px; }
+.tile h3 { margin: 0; font-family: var(--display); font-variation-settings: "opsz" 48, "wdth" 85; font-weight: 750; font-size: clamp(1.6rem, 2.6vw, 2.2rem); line-height: 1; letter-spacing: -0.03em; }
+.tile p { margin: 0; max-width: 46ch; font-size: 0.98rem; line-height: 1.5; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font: 500 0.7rem/1 var(--mono); letter-spacing: 0.06em; padding: 6px 9px; border-radius: 999px; white-space: nowrap; }
+
+/* Tile identities: each project keeps its own colors in both themes. */
+.t-deaddice { grid-column: span 4; min-height: 440px; background: #1d2226; color: #f0d8bb; }
+.t-deaddice .art img { image-rendering: pixelated; object-position: 50% 40%; }
+.t-deaddice .art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(29 34 38 / 0) 35%, rgb(29 34 38 / 0.94) 82%); }
+.t-deaddice .logo { width: 546px; max-width: 80%; image-rendering: pixelated; }
+.t-deaddice .pill { background: #232c2d; color: #dcae5c; border: 1px solid #5e5b4e; }
+.t-deaddice p { color: #d7c3a1; }
+
+.t-letrado { grid-column: span 2; grid-row: span 2; background: #1c1530; color: #f2eefc; }
+.t-letrado .shot { margin: 16px 16px 0; border-radius: 18px; overflow: hidden; border: 1px solid #3c2f63; box-shadow: 0 18px 40px rgb(0 0 0 / 0.35); }
+.t-letrado .shot img { width: 100%; height: auto; }
+.t-letrado .pill { background: #2c2150; color: #33c3e6; }
+.t-letrado p { color: #c9bfe6; }
+
+.t-olyrion { grid-column: span 4; min-height: 400px; background: #070d15; color: #e8dfc8; }
+.t-olyrion .art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(4 8 14 / 0.9) 0%, rgb(4 8 14 / 0.4) 58%, rgb(4 8 14 / 0.1)); }
+.t-olyrion .logo { width: min(320px, 72%); }
+.t-olyrion .pill { background: #c9a25a; color: #170f05; }
+.t-olyrion .pill.ghost { background: rgb(10 17 25 / 0.76); color: #e8dfc8; border: 1px solid rgb(201 162 90 / 0.5); }
+.t-olyrion p { color: #c2bcae; }
+
+.t-heimdall { grid-column: span 3; min-height: 300px; background: #0e1b22; color: #e3f4f7; }
+.t-heimdall .code { margin: 24px 24px 0; padding: 14px 16px; border-radius: 12px; background: #08121a; border: 1px solid #1f3a46; font: 400 0.86rem/1.5 var(--mono); color: #7fd6e8; overflow-x: auto; white-space: nowrap; }
+.t-heimdall .code span { color: #4f6f7a; }
+.t-heimdall .pill { background: #173039; color: #7fd6e8; }
+.t-heimdall p { color: #a9c3ca; }
+.t-heimdall .eye { position: absolute; right: 22px; top: 86px; width: 74px; opacity: 0.9; }
+
+.t-reonv { grid-column: span 3; min-height: 300px; background: #e9efe4; color: #18241b; }
+.t-reonv .pipe { margin: 24px 24px 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; font: 500 0.72rem/1 var(--mono); }
+.t-reonv .pipe span { padding: 14px 0; text-align: center; border-radius: 6px; background: #ffffff; border: 1px solid #c5d3bf; }
+.t-reonv .pipe span.isa { background: #2d6a4f; color: #e9efe4; border-color: #2d6a4f; }
+.t-reonv .pipe-cap { margin: 8px 24px 0; font: 400 0.72rem/1.4 var(--mono); color: #4c5d50; }
+.t-reonv .pill { background: #18241b; color: #e9efe4; }
+.t-reonv p { color: #3b4a3f; }
+
+.also { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.also .label { margin-right: 6px; }
+.also a { font: 500 0.82rem/1 var(--mono); padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); text-decoration: none; background: var(--card); }
+.also a:hover { border-color: var(--ink); }
+
+footer { border-top: 1.5px solid var(--ink); padding-block: 24px 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; color: var(--muted); font-size: 0.95rem; }
+footer nav { display: flex; gap: 18px; }
+
+@media (max-width: 900px) {
+  .hero, .chapter-head, .work-grid { grid-template-columns: 1fr; }
+  .photo { max-width: 300px; justify-self: start; }
+  .shelf { grid-template-columns: 1fr 1fr; }
+  .t-deaddice, .t-olyrion { grid-column: span 2; }
+  .t-letrado { grid-column: span 2; grid-row: auto; }
+  .t-letrado .shot img { aspect-ratio: 16 / 10; object-fit: cover; object-position: 50% 14%; }
+  .t-heimdall, .t-reonv { grid-column: span 2; }
+}
+@media (max-width: 520px) {
+  .shelf { grid-template-columns: 1fr; }
+  .t-deaddice, .t-olyrion, .t-letrado, .t-heimdall, .t-reonv { grid-column: auto; }
+  .t-deaddice { min-height: 380px; }
+  .timeline li { grid-template-columns: 1fr; gap: 4px; }
+  .t-reonv .pipe { font-size: 0.6rem; }
+  .t-heimdall .eye { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tile { transition: transform 220ms cubic-bezier(.2,.7,.2,1); }
+  .tile:hover { transform: translateY(-4px); }
+  .photo img { transition: border-radius 600ms ease; }
+  .photo:hover img { border-radius: 50%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="wordmark" href="#top"><i aria-hidden="true"></i>lcbcfoo</a>
+    <nav aria-label="Site">
+      <a href="#work">What I work on</a>
+      <a href="#hobbies">My hobbies</a>
+      <a href="https://github.com/lcbcFoo">GitHub</a>
+      <a href="index.html">Mockup C · all</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="top">
+    <figure class="photo" style="margin:0">
+      <img src="assets/avatar.jpg" alt="Lucas's profile picture: a black and white border collie smiling on a sunny street">
+      <figcaption class="sticker">lcbcFoo on GitHub</figcaption>
+    </figure>
+    <div>
+      <h1>Hello <span>there!</span></h1>
+      <div class="intro">
+        <p>My name is Lucas, I am a computer engineer and hobbyist from Brazil, living in the silicon valley and working on GPU architecture at NVIDIA.</p>
+        <p>I am easy-going and enjoy working with diverse people and environments.</p>
+      </div>
+      <div class="doors">
+        <a class="door" href="#work"><span class="n">1</span><span><small>Day job</small>What I work on</span></a>
+        <a class="door alt" href="#hobbies"><span class="n">2</span><span><small>Studio</small>My hobbies</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="work" aria-labelledby="work-h">
+    <div class="chapter-head">
+      <div>
+        <p class="label">Chapter 1 · Day job</p>
+        <h2 id="work-h">What I work on</h2>
+      </div>
+      <p class="lead">Senior GPU Architect with over 7 years of experience in system architecture for ASIC, GPU, and SoC devices for both graphics and AI/ML workloads.</p>
+    </div>
+
+    <div class="work-grid">
+      <div>
+        <p class="role">Secure boot of NVIDIA GPUs<small>Blackwell, Rubin, and next gens</small></p>
+        <div class="boot">
+          <ol aria-label="From power-up to SW">
+            <li>power-up</li><li class="arrow" aria-hidden="true">→</li>
+            <li>hardware</li><li class="arrow" aria-hidden="true">→</li>
+            <li>firmware</li><li class="arrow" aria-hidden="true">→</li>
+            <li>SW</li>
+          </ol>
+        </div>
+      </div>
+      <ul class="timeline">
+        <li>
+          <span class="when"><b>Now</b> · NVIDIA</span>
+          <div><h3>Currently architecting the secure boot of NVIDIA GPUs</h3><p>Coordinating across many hardware, firmware, and software teams to deliver a secure initialization of the system, from power-up to SW.</p></div>
+        </li>
+        <li>
+          <span class="when">5 years · Lumentum/Idea</span>
+          <div><h3>Embedded solutions and hardware-software co-design</h3><p>Developing embedded solutions and hardware-software co-design projects for photonic devices.</p></div>
+        </li>
+        <li>
+          <span class="when">Master · UNICAMP</span>
+          <div><h3>Master in Computer Science</h3><p>With a specialization in Computer Architecture and Energy Efficiency.</p></div>
+        </li>
+        <li>
+          <span class="when">2018 · ReonV</span>
+          <div><h3>Creator of ReonV</h3><p>One of the first RISC-V processors published from Brazil.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter" id="hobbies" aria-labelledby="hobbies-h">
+    <div class="chapter-head">
+      <div>
+        <p class="label">Chapter 2 · Studio</p>
+        <h2 id="hobbies-h">My hobbies</h2>
+      </div>
+      <p class="lead">Hobbyist with several projects in GitHub exploring ML, LLM, optimization problems, games, full stack apps.</p>
+    </div>
+
+    <div class="shelf">
+      <article class="tile t-deaddice">
+        <div class="art"><img src="assets/deaddice-keyart.png" alt="Dead Dice key art: a party of five pixel-art heroes descending a well in a rope lift, dice tumbling around them"></div>
+        <div class="copy">
+          <img class="logo" src="assets/deaddice-logo.png" alt="Dead Dice">
+          <p><strong>Hunting things and rolling down.</strong> A portrait pixel-art dice roguelike with extraction: village → expedition → extract or descend.</p>
+          <div class="meta"><span class="pill">Coming soon · Google Play</span><span class="pill">TypeScript · PixiJS</span><span class="pill">Foo Game Studios</span></div>
+        </div>
+      </article>
+
+      <a class="tile t-letrado" href="https://letrado.app">
+        <div class="shot"><img src="assets/letrado-frame.png" alt="Letrado's daily 5×5 letter grid"></div>
+        <div class="copy">
+          <h3>Letrado</h3>
+          <p>A daily word puzzle game where players find all hidden Portuguese words by dragging paths through adjacent letters.</p>
+          <div class="meta"><span class="pill">Live · letrado.app</span><span class="pill">React · Firebase</span></div>
+        </div>
+      </a>
+
+      <a class="tile t-olyrion" href="https://trialsofolyrion.com">
+        <div class="art"><img src="assets/olyrion-coast.jpg" alt=""></div>
+        <div class="copy">
+          <img class="logo" src="assets/olyrion-logo.png" alt="Trials of Olyrion">
+          <p>Locations, crafted materials, and a sense of place sit at the heart of the experience. Now playable in a small, invitation-based closed beta.</p>
+          <div class="meta"><span class="pill">Closed beta</span><span class="pill ghost">React · PixiJS · Tauri · FastAPI</span></div>
+        </div>
+      </a>
+
+      <a class="tile t-heimdall" href="https://github.com/lcbcFoo/heimdall-mcp-server">
+        <div class="code"><span>$</span> pip install heimdall-mcp<br><span>$</span> heimdall project init</div>
+        <svg class="eye" viewBox="0 0 64 64" aria-hidden="true"><path d="M4 32 C16 14 48 14 60 32 C48 50 16 50 4 32Z" fill="none" stroke="#7fd6e8" stroke-width="3"/><circle cx="32" cy="32" r="10" fill="#7fd6e8"/><circle cx="32" cy="32" r="4" fill="#0e1b22"/></svg>
+        <div class="copy">
+          <h3>Heimdall</h3>
+          <p>Your AI coding assistant's long-term memory. Heimdall gives your LLM a persistent, growing, cognitive memory of your specific codebase, lessons and memories carry over time.</p>
+          <div class="meta"><span class="pill">Open source · ★ 105</span><span class="pill">Python · MCP · Qdrant</span></div>
+        </div>
+      </a>
+
+      <a class="tile t-reonv" href="https://github.com/lcbcFoo/ReonV">
+        <div class="pipe" aria-label="Leon3 7-stage integer pipeline, changed from SPARC to RISC-V">
+          <span>FE</span><span>DE</span><span>RA</span><span>EX</span><span>ME</span><span>XC</span><span>WR</span>
+        </div>
+        <p class="pipe-cap">Leon3's 7-stage integer pipeline, changed from SPARC V8 to RISC-V RV32I</p>
+        <div class="copy">
+          <h3>ReonV</h3>
+          <p>One of the first RISC-V processors published from Brazil. A modified version of the Leon3, a synthesisable VHDL model of a 32-bit processor.</p>
+          <div class="meta"><span class="pill">2018 · ★ 82</span><span class="pill">VHDL · GRLIB</span></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="also">
+      <span class="label">Also on GitHub</span>
+      <a href="https://github.com/lcbcFoo/foocolors.nvim">foocolors.nvim</a>
+      <a href="https://github.com/lcbcFoo/ironbar-gpu-top">ironbar-gpu-top</a>
+      <a href="https://github.com/lcbcFoo/circuitly">circuitly</a>
+      <a href="https://github.com/lcbcFoo/meNES">meNES</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>Lucas Castro · from Brazil, living in the silicon valley</span>
+    <nav aria-label="Elsewhere"><a href="https://github.com/lcbcFoo">GitHub</a><a href="#linkedin">LinkedIn</a></nav>
+  </footer>
+
+</div>
+</body>
+</html>

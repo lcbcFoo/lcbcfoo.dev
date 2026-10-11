@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Not found · Lucas Castro</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1b1b1d">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&family=Martian+Mono:wdth,wght@75..112.5,300..800&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  /* Served by Cloudflare Pages for any missing path; links are absolute for that reason. */
+  .nf { min-height: calc(100dvh - var(--gap) * 2); margin-top: var(--gap); display: grid; align-content: center; }
+  .nf .inner { display: grid; gap: 18px; }
+  .nf .err { margin: 0; color: var(--coral); overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<main class="win nf">
+  <div class="inner">
+    <p class="prompt"><span class="u">foo</span>@<span class="h">arch</span> <span class="cwd">~</span> $ cd <span id="path">this-page</span></p>
+    <p class="err">cd: no such file or directory</p>
+    <h1 class="h2">Nothing here.</h1>
+    <div class="btns">
+      <a class="btn primary" href="/">← back to lcbcfoo.dev</a>
+      <a class="btn" href="/#studio">studio</a>
+    </div>
+  </div>
+</main>
+<script>document.getElementById('path').textContent = location.pathname.replace(/^\//, '') || '/';</script>
+</body>
+</html>

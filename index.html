@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lucas Castro</title>
+<meta name="description" content="Lucas Castro: computer engineer and hobbyist from Brazil, living in the silicon valley and working on GPU architecture at NVIDIA. Games, apps and open-source projects.">
+<meta name="theme-color" content="#1b1b1d">
+<link rel="canonical" href="https://lcbcfoo.dev/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lcbcfoo.dev/">
+<meta property="og:title" content="Lucas Castro">
+<meta property="og:description" content="Computer engineer and hobbyist from Brazil, living in the silicon valley and working on GPU architecture at NVIDIA.">
+<meta property="og:image" content="https://lcbcfoo.dev/assets/avatar.jpg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Martian+Mono:wdth,wght@75..112.5,300..800&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<script>document.documentElement.classList.add('js')</script>
+<script src="js/site.js" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#hello"><img src="assets/avatar.jpg" alt=""><span>lucas castro</span></a>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#hello" data-ws="hello" class="on" aria-current="page"><span class="n">1</span>hello</a>
+    <a href="#work" data-ws="work"><span class="n">2</span>work</a>
+    <a href="#studio" data-ws="studio"><span class="n">3</span>studio</a>
+  </nav>
+  <div class="tright">
+    <span class="clock" id="clock">--</span>
+    <a class="ext" href="https://github.com/lcbcFoo">github</a>
+    <a class="ext" href="https://www.linkedin.com/in/lcbcfoo">linkedin</a>
+    <a class="ext" href="mailto:foo@lcbcfoo.dev">email</a>
+    <button class="keys" id="keys-btn" type="button" aria-controls="help" aria-expanded="false" aria-label="Keyboard shortcuts">?</button>
+  </div>
+</header>
+
+<main class="desk">
+
+  <!-- ===================== 1 · hello ===================== -->
+  <section class="ws on" id="hello" aria-label="hello">
+    <div class="win" tabindex="-1">
+      <div class="inner">
+        <p class="prompt"><span class="u">foo</span>@<span class="h">arch</span> <span class="cwd">~</span> $ cat hello.md</p>
+        <div class="hello-grid">
+          <div class="hello-text">
+            <h1 class="h1">Hello there!</h1>
+            <p class="lede">My name is <span class="hl-coral">Lucas</span>, I am a computer engineer and hobbyist from <span class="hl-lime">Brazil</span>, living in the <span class="hl-sky">silicon valley</span> and working on GPU architecture at <span class="hl-lime">NVIDIA</span>.</p>
+            <p class="lede dim">I am easy-going and enjoy working with diverse people and environments.</p>
+            <div class="btns">
+              <a class="btn" href="https://github.com/lcbcFoo">github ↗</a>
+              <a class="btn" href="https://www.linkedin.com/in/lcbcfoo">linkedin ↗</a>
+              <a class="btn" href="mailto:foo@lcbcfoo.dev">foo@lcbcfoo.dev</a>
+            </div>
+          </div>
+          <figure class="portrait">
+            <img src="assets/avatar.jpg" alt="Lucas's profile picture: a black and white border collie smiling on a sunny street">
+            <figcaption>me.jpg</figcaption>
+          </figure>
+        </div>
+
+        <div class="doors-wrap">
+          <p class="prompt"><span class="u">foo</span>@<span class="h">arch</span> <span class="cwd">~</span> $ ls</p>
+          <div class="doors">
+            <a class="door work" href="#work">
+              <span class="path">work.md</span>
+              <h2>What I work on</h2>
+              <p>Senior GPU Architect at NVIDIA. Currently architecting the secure boot of NVIDIA GPUs (Blackwell, Rubin, and next gens).</p>
+              <p class="dim">Before: Lumentum/Idea · UNICAMP · ReonV</p>
+              <span class="go">open →</span>
+            </a>
+            <a class="door studio" href="#studio">
+              <div class="strip" aria-hidden="true">
+                <img class="pixel" src="assets/projects/deaddice/keyart.png" alt="" style="object-position:56% 42%">
+                <img src="assets/projects/olyrion/coast.jpg" alt="">
+                <img src="assets/projects/letrado/play.jpg" alt="" style="object-position:50% 40%">
+                <img src="assets/projects/heimdall/demo.jpg" alt="" style="object-position:0 0">
+              </div>
+              <span class="path">studio/</span>
+              <h2>My hobbies and projects</h2>
+              <p>Hobbyist with several projects in GitHub exploring ML, LLM, optimization problems, games, full stack apps.</p>
+              <span class="go">open →</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 · work ===================== -->
+  <section class="ws" id="work" aria-label="work">
+    <div class="win" tabindex="-1">
+      <div class="inner">
+        <p class="prompt"><span class="u">foo</span>@<span class="h">arch</span> <span class="cwd">~</span> $ cat work.md</p>
+        <header class="page-head">
+          <h2 class="h2">What I work on</h2>
+        </header>
+        <div class="work-grid">
+          <section class="now" aria-labelledby="now-h">
+            <p class="label" id="now-h"><span class="hash">## </span>Now</p>
+            <p class="role">Senior GPU Architect</p>
+            <p class="org">NVIDIA</p>
+            <p class="body">Over 7 years of experience in system architecture for ASIC, GPU, and SoC devices for both graphics and AI/ML workloads.</p>
+            <p class="body">Currently architecting the secure boot of NVIDIA GPUs (Blackwell, Rubin, and next gens), coordinating across many hardware, firmware, and software teams to deliver a secure initialization of the system, from power-up to SW.</p>
+            <div class="tags"><span>ASIC</span><span>GPU</span><span>SoC</span><span>graphics</span><span>AI/ML</span><span>secure boot</span></div>
+          </section>
+          <section aria-labelledby="before-h">
+            <p class="label" id="before-h"><span class="hash">## </span>Before</p>
+            <ol class="timeline">
+              <li>
+                <span class="when">5 years · Lumentum/Idea</span>
+                <h3>Embedded solutions and hardware-software co-design</h3>
+                <p>Developing embedded solutions and hardware-software co-design projects for photonic devices.</p>
+              </li>
+              <li>
+                <span class="when">Master · UNICAMP</span>
+                <h3>Master in Computer Science</h3>
+                <p>With a specialization in Computer Architecture and Energy Efficiency.</p>
+              </li>
+              <li>
+                <span class="when">2018 · ReonV</span>
+                <h3>Creator of ReonV</h3>
+                <p>One of the first RISC-V processors published from Brazil.</p>
+                <div class="mini-pipe" aria-hidden="true"><span>FE</span><span>DE</span><span>RA</span><span>EX</span><span>ME</span><span>XC</span><span>WR</span></div>
+                <a href="#studio/reonv">see it in the studio →</a>
+              </li>
+            </ol>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 · studio ===================== -->
+  <section class="ws" id="studio" aria-label="studio">
+    <div class="win" tabindex="-1">
+      <div class="inner">
+
+        <!-- overview -->
+        <div class="view on" id="studio-overview">
+          <p class="prompt"><span class="u">foo</span>@<span class="h">arch</span> <span class="cwd">~/studio</span> $ ls</p>
+          <header class="page-head">
+            <h2 class="h2">My hobbies and projects</h2>
+            <p class="lede dim">Hobbyist with several projects in GitHub exploring ML, LLM, optimization problems, games, full stack apps.</p>
+          </header>
+
+          <h3 class="group">games/ <small></small></h3>
+          <div class="cards games">
+            <a class="card p-letrado" href="#studio/letrado" data-key="letrado">
+              <div class="media" style="background:#1c1530"><img src="assets/projects/letrado/play.jpg" alt="" style="object-position:50% 44%"></div>
+              <div class="row1"><span class="name">letrado.app</span><span class="st">live</span></div>
+              <p class="tag">A daily word puzzle game where players find all hidden Portuguese words by dragging paths through adjacent letters.</p>
+              <span class="more">react · firebase · python</span>
+            </a>
+            <a class="card p-olyrion" href="#studio/olyrion" data-key="olyrion">
+              <div class="media shade"><img src="assets/projects/olyrion/coast.jpg" alt=""><img class="mark" src="assets/projects/olyrion/logo.png" alt="" style="width:52%"></div>
+              <div class="row1"><span class="name">trials-of-olyrion</span><span class="st">closed beta</span></div>
+              <p class="tag">Locations, crafted materials, and a sense of place sit at the heart of the experience.</p>
+              <span class="more">react · pixijs · tauri · fastapi</span>
+            </a>
+            <a class="card p-deaddice" href="#studio/deaddice" data-key="deaddice">
+              <div class="media shade" style="background:#1d2226"><img class="pixel" src="assets/projects/deaddice/keyart.png" alt="" style="object-position:56% 42%"><img class="mark" src="assets/projects/deaddice/logo.png" alt="" style="width:60%"></div>
+              <div class="row1"><span class="name">dead-dice</span><span class="st">coming soon</span></div>
+              <p class="tag">Hunting things and rolling down. A portrait pixel-art dice roguelike with extraction.</p>
+              <span class="more">typescript · pixijs · capacitor</span>
+            </a>
+          </div>
+
+          <h3 class="group">open-source/ <small></small></h3>
+          <div class="cards oss">
+            <a class="card p-reonv" href="#studio/reonv" data-key="reonv">
+              <div class="media pipe" aria-hidden="true"><span>FE</span><span>DE</span><span>RA</span><span>EX</span><span>ME</span><span>XC</span><span>WR</span><small>Leon3's 7-stage integer pipeline, now RISC-V</small></div>
+              <div class="row1"><span class="name">ReonV</span><span class="st">2018 · ★ 82</span></div>
+              <p class="tag">One of the first RISC-V processors published from Brazil.</p>
+              <span class="more">vhdl · risc-v rv32i · grlib</span>
+            </a>
+            <a class="card p-heimdall" href="#studio/heimdall" data-key="heimdall">
+              <div class="media"><img src="assets/projects/heimdall/demo.jpg" alt="" style="object-position:0 0"></div>
+              <div class="row1"><span class="name">heimdall-mcp-server</span><span class="st">★ 105</span></div>
+              <p class="tag">Your AI Coding Assistant's Long-Term Memory.</p>
+              <span class="more">python · mcp · qdrant</span>
+            </a>
+          </div>
+
+          <h3 class="group">tinkering/ <small></small></h3>
+          <div class="cards tinker">
+            <a class="card p-tinker" href="#studio/foocolors" data-key="foocolors">
+              <div class="media stripes" aria-hidden="true"><i style="background:#212121"></i><i style="background:#f0ebe8"></i><i style="background:#ff8f9e"></i><i style="background:#b6ff5c"></i><i style="background:#ffc95c"></i><i style="background:#8fbdff"></i><i style="background:#ca9aff"></i><i style="background:#5dffe9"></i></div>
+              <div class="row1"><span class="name">foocolors.nvim</span></div>
+              <p class="tag">A dark, high-contrast pastel-neon colorscheme for Neovim.</p>
+            </a>
+            <a class="card p-tinker" href="#studio/gputop" data-key="gputop">
+              <div class="media contain-dark"><img src="assets/projects/gputop/popup.png" alt=""></div>
+              <div class="row1"><span class="name">ironbar-gpu-top</span></div>
+              <p class="tag">Compact nvtop-inspired NVIDIA monitor module for Ironbar.</p>
+            </a>
+            <a class="card p-tinker" href="#studio/circuitly" data-key="circuitly">
+              <div class="media glyph" aria-hidden="true"><svg viewBox="0 0 120 70"><g fill="none" stroke="#ca9aff" stroke-width="4" stroke-linecap="round"><path d="M40 10h22a25 25 0 0 1 0 50H40Z"/><path d="M8 22h32M8 48h32M87 35h25"/></g><circle cx="8" cy="22" r="4" fill="#b6ff5c"/><circle cx="8" cy="48" r="4" fill="#b6ff5c"/><circle cx="112" cy="35" r="4" fill="#b6ff5c"/></svg></div>
+              <div class="row1"><span class="name">circuitly</span><span class="st">★ 10</span></div>
+              <p class="tag">A visual and constructive framework for teaching digital circuits.</p>
+            </a>
+            <a class="card p-tinker" href="#studio/menes" data-key="menes">
+              <div class="media glyph" aria-hidden="true"><b>meNES</b></div>
+              <div class="row1"><span class="name">meNES</span></div>
+              <p class="tag">My Emulator of NES.</p>
+            </a>
+          </div>
+        </div>
+
+        <!-- details -->
+        <article class="view detail p-letrado" id="studio/letrado" data-key="letrado">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/games/<b>letrado.app</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>letrado.app <span class="st">live</span></h2>
+              <p class="tag">A daily word puzzle game where players find all hidden Portuguese words by dragging paths through adjacent letters.</p>
+              <p lang="pt-BR">Jogo de palavras diário em português.</p>
+              <p class="stack">react · typescript · vite · firebase · python</p>
+              <div class="btns"><a class="btn primary" href="https://letrado.app" target="_blank" rel="noopener">play at letrado.app ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero contain"><img src="assets/projects/letrado/play.jpg" alt="A Letrado round: a 5×5 letter grid with the word TIRA traced through adjacent letters"><img class="mark" src="assets/projects/letrado/logo.png" alt="" style="width:64px"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-olyrion" id="studio/olyrion" data-key="olyrion">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/games/<b>trials-of-olyrion</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>Trials of Olyrion <span class="st">closed beta</span></h2>
+              <p class="tag">Locations, crafted materials, and a sense of place sit at the heart of the experience.</p>
+              <p>Trials of Olyrion is now playable in a small, invitation-based closed beta. The hosted client is running at play.trialsofolyrion.com for invited players.</p>
+              <p class="stack">react · pixijs · tauri · fastapi · postgresql · redis</p>
+              <div class="btns"><a class="btn primary" href="https://trialsofolyrion.com" target="_blank" rel="noopener">trialsofolyrion.com ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero shade"><img src="assets/projects/olyrion/coast.jpg" alt="The Ionian coast of Olyrion: olive trees, a stone path and a turquoise bay"><img class="mark" src="assets/projects/olyrion/logo.png" alt="Trials of Olyrion" style="width:min(320px, 46%)"></div>
+              <div class="gallery one"><figure><img src="assets/projects/olyrion/aegean.jpg" alt="A painted map of the Aegean islands"><figcaption>the Aegean</figcaption></figure></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-deaddice" id="studio/deaddice" data-key="deaddice">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/games/<b>dead-dice</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>Dead Dice <span class="st">coming soon</span></h2>
+              <p class="tag">Hunting things and rolling down.</p>
+              <p lang="pt-BR">Caçando bicho e rolando buraco abaixo.</p>
+              <p>A portrait pixel-art dice roguelike with extraction: village → expedition → extract or descend. A fixed party of five climbs dungeons of four floors, each a branching map ending in a boss checkpoint.</p>
+              <p class="stack">typescript · pixijs · vite · capacitor · Foo Game Studios</p>
+              <div class="btns"><span class="btn off">coming soon to Google Play</span></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero shade" style="background:#1d2226"><img class="pixel" src="assets/projects/deaddice/keyart.png" alt="Dead Dice key art: a party of five pixel-art heroes descending a well in a rope lift, dice tumbling around them" style="object-position:56% 40%"><img class="mark pixel" src="assets/projects/deaddice/logo.png" alt="Dead Dice" style="width:273px; max-width:50%"></div>
+              <div class="gallery">
+                <img class="pixel" src="assets/projects/deaddice/village.png" alt="The village of Little Grimming">
+                <img class="pixel" src="assets/projects/deaddice/tavern.png" alt="Hiring heroes at the tavern">
+                <img class="pixel" src="assets/projects/deaddice/boss.png" alt="A boss fight against the Grand Croak in the Fungus Deep">
+                <img class="pixel" src="assets/projects/deaddice/ways-down.png" alt="Choosing a dungeon in the Hole">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-reonv" id="studio/reonv" data-key="reonv">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/open-source/<b>ReonV</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>ReonV <span class="st">2018 · ★ 82</span></h2>
+              <p class="tag">One of the first RISC-V processors published from Brazil.</p>
+              <p>ReonV is a modified version of the Leon3, a synthesisable VHDL model of a 32-bit processor originally compliant with the SPARC V8 architecture, now changed to RISC-V ISA.</p>
+              <p>ReonV changed the Leon3 7-stage integer pipeline from SPARC to RISC-V, maintaining all other IP cores and resources provided by GRLIB IP Library untouched.</p>
+              <p class="stack">vhdl · risc-v rv32i · grlib · fpga</p>
+              <div class="btns"><a class="btn primary" href="https://github.com/lcbcFoo/ReonV" target="_blank" rel="noopener">github ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero pipe" aria-label="Leon3's 7-stage integer pipeline"><span>FE</span><span>DE</span><span>RA</span><span>EX</span><span>ME</span><span>XC</span><span>WR</span><small>7-stage integer pipeline · lib/gaisler/leon3v3/iu3.vhd</small></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-heimdall" id="studio/heimdall" data-key="heimdall">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/open-source/<b>heimdall-mcp-server</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>Heimdall <span class="st">★ 105</span></h2>
+              <p class="tag">Your AI Coding Assistant's Long-Term Memory.</p>
+              <p>Heimdall gives your LLM a persistent, growing, cognitive memory of your specific codebase, lessons and memories carry over time.</p>
+              <div class="feats"><span>Context-Rich Memory</span><span>Git-Aware Context</span><span>Isolated &amp; Organized</span><span>Efficient Integration</span></div>
+              <pre class="code"><span>$</span> pip install heimdall-mcp
+<span>$</span> heimdall project init</pre>
+              <p class="stack">python · mcp · qdrant</p>
+              <div class="btns"><a class="btn primary" href="https://github.com/lcbcFoo/heimdall-mcp-server" target="_blank" rel="noopener">github ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero"><img src="assets/projects/heimdall/demo.jpg" alt="Heimdall's demo video: a terminal session"><a class="play" href="https://youtu.be/7X1gntAXsao" target="_blank" rel="noopener"><span>▶ watch the demo</span></a></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-tinker" id="studio/foocolors" data-key="foocolors">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/tinkering/<b>foocolors.nvim</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>foocolors.nvim</h2>
+              <p class="tag">A dark, high-contrast pastel-neon colorscheme for Neovim.</p>
+              <p>This page wears it.</p>
+              <p class="stack">lua · neovim</p>
+              <div class="btns"><a class="btn primary" href="https://github.com/lcbcFoo/foocolors.nvim" target="_blank" rel="noopener">github ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="swatches" aria-hidden="true">
+                <span class="darkchip" style="background:#212121">bg<br>#212121</span>
+                <span style="background:#f0ebe8">fg<br>#f0ebe8</span>
+                <span style="background:#ff8f9e">coral<br>#ff8f9e</span>
+                <span style="background:#b6ff5c">lime<br>#b6ff5c</span>
+                <span style="background:#ffc95c">gold<br>#ffc95c</span>
+                <span style="background:#8fbdff">sky<br>#8fbdff</span>
+                <span style="background:#ca9aff">lilac<br>#ca9aff</span>
+                <span style="background:#5dffe9">cyan<br>#5dffe9</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-tinker" id="studio/gputop" data-key="gputop">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/tinkering/<b>ironbar-gpu-top</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>ironbar-gpu-top</h2>
+              <p class="tag">Compact nvtop-inspired NVIDIA monitor module for Ironbar.</p>
+              <p class="stack">shell · ironbar</p>
+              <div class="btns"><a class="btn primary" href="https://github.com/lcbcFoo/ironbar-gpu-top" target="_blank" rel="noopener">github ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero contain-dark"><img src="assets/projects/gputop/popup.png" alt="ironbar-gpu-top popup showing two GPUs and system RAM with 60 seconds of history"></div>
+              <div class="hero contain-dark" style="aspect-ratio: 16 / 3"><img src="assets/projects/gputop/bar.png" alt="ironbar-gpu-top compact bar module"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-tinker" id="studio/circuitly" data-key="circuitly">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/tinkering/<b>circuitly</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>circuitly <span class="st">★ 10</span></h2>
+              <p class="tag">A visual and constructive framework for teaching digital circuits.</p>
+              <p class="stack">javascript · circuitly.app</p>
+              <div class="btns"><a class="btn primary" href="https://github.com/lcbcFoo/circuitly" target="_blank" rel="noopener">github ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero glyph" aria-hidden="true"><svg viewBox="0 0 120 70"><g fill="none" stroke="#ca9aff" stroke-width="4" stroke-linecap="round"><path d="M40 10h22a25 25 0 0 1 0 50H40Z"/><path d="M8 22h32M8 48h32M87 35h25"/></g><circle cx="8" cy="22" r="4" fill="#b6ff5c"/><circle cx="8" cy="48" r="4" fill="#b6ff5c"/><circle cx="112" cy="35" r="4" fill="#b6ff5c"/></svg></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="view detail p-tinker" id="studio/menes" data-key="menes">
+          <nav class="crumbs"><a class="back" href="#studio">← studio</a><span class="path">~/studio/tinkering/<b>meNES</b></span></nav>
+          <div class="detail-grid">
+            <div class="dtext">
+              <h2>meNES</h2>
+              <p class="tag">My Emulator of NES.</p>
+              <p class="stack">assembly</p>
+              <div class="btns"><a class="btn primary" href="https://github.com/lcbcFoo/meNES" target="_blank" rel="noopener">github ↗</a></div>
+            </div>
+            <div class="dmedia">
+              <div class="hero glyph" aria-hidden="true"><b>meNES</b></div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="help" id="help" role="dialog" aria-label="Keyboard shortcuts" hidden>
+  <p class="ttl">keys</p>
+  <dl>
+    <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></dt><dd>hello · work · studio</dd>
+    <dt><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd></dt><dd>browse projects</dd>
+    <dt><kbd>↵</kbd></dt><dd>open</dd>
+    <dt><kbd>esc</kbd></dt><dd>back</dd>
+    <dt><kbd>?</kbd></dt><dd>show / hide this</dd>
+  </dl>
+  <p class="foot"><span>the mouse works too</span></p>
+</div>
+</body>
+</html>

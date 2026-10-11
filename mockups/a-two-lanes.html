@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Two Lanes · lcbcfoo.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the page is split down the middle, work on the light left and studio on the dark right.
+   The hero's "Hello | there!" straddles the seam and the avatar sits on it. Stacks on phones. */
+:root {
+  --work-bg: #eceee9;
+  --work-ink: #17201c;
+  --work-mute: #59645e;
+  --work-line: #cdd4ce;
+  --work-accent: #2d6a4f;
+  --studio-bg: #16131b;
+  --studio-ink: #f3ede6;
+  --studio-mute: #a69fae;
+  --studio-line: #2e2836;
+  --studio-accent: #f2b35b;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --gutter: clamp(16px, 4vw, 56px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--work-bg);
+  color: var(--work-ink);
+  font: 400 1.0625rem/1.6 var(--display);
+  font-variation-settings: "wdth" 100;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* The two halves. Every band of the page is a .split with a .work and a .studio side. */
+.split { display: grid; grid-template-columns: 1fr 1fr; position: relative; }
+.work { background: var(--work-bg); color: var(--work-ink); }
+.studio { background: var(--studio-bg); color: var(--studio-ink); }
+.side { padding-inline: var(--gutter); min-width: 0; }
+
+.label {
+  font: 500 0.72rem/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.work .label { color: var(--work-accent); }
+.studio .label { color: var(--studio-accent); }
+
+/* Top bar */
+.bar .side { padding-block: 18px; display: flex; align-items: center; gap: 20px; font: 500 0.8rem/1 var(--mono); }
+.bar .work { justify-content: space-between; }
+.bar .studio { justify-content: flex-end; }
+.bar a { text-decoration: none; }
+.bar a:hover { text-decoration: underline; }
+.wordmark { font: 800 1.05rem/1 var(--display); font-variation-settings: "wdth" 125; letter-spacing: -0.01em; }
+.mock-tag { color: var(--work-mute); }
+
+/* Hero */
+.hero .side { padding-block: clamp(48px, 9vw, 120px) clamp(40px, 6vw, 80px); display: flex; flex-direction: column; gap: 18px; }
+.hero .work { align-items: flex-end; text-align: right; }
+.hero .studio { align-items: flex-start; }
+.word {
+  font-weight: 850;
+  font-variation-settings: "wdth" 125;
+  font-size: clamp(3.6rem, 9.4vw, 8.8rem);
+  line-height: 0.86;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.hero .work .word { padding-right: clamp(70px, 8vw, 110px); }
+.hero .studio .word { padding-left: clamp(70px, 8vw, 110px); color: var(--studio-accent); }
+.hero p.lede { margin: 0; max-width: 34ch; font-size: clamp(1.05rem, 1.4vw, 1.25rem); text-wrap: pretty; }
+.hero .work .lede { padding-right: clamp(70px, 8vw, 110px); }
+.hero .studio .lede { padding-left: clamp(70px, 8vw, 110px); color: var(--studio-ink); }
+.hero .studio .lede + .lede { color: var(--studio-mute); }
+.avatar {
+  position: absolute;
+  left: 50%;
+  top: clamp(56px, 9.5vw, 128px);
+  transform: translateX(-50%);
+  width: clamp(116px, 13vw, 176px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 7px;
+  background: linear-gradient(90deg, var(--work-ink) 50%, var(--studio-accent) 50%);
+  z-index: 2;
+}
+.avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+/* Section heads */
+.lane-head { padding-block: 40px 8px; display: grid; gap: 10px; }
+.lane-head h2 {
+  margin: 0;
+  font-weight: 800;
+  font-variation-settings: "wdth" 112;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.lane-head p { margin: 0; max-width: 52ch; }
+.work .lane-head p { color: var(--work-mute); }
+.studio .lane-head p { color: var(--studio-mute); }
+.work .lane-head, .work .lane-body { border-top: 1px solid var(--work-line); }
+.studio .lane-head, .studio .lane-body { border-top: 1px solid var(--studio-line); }
+.lanes .work .lane-head { border-top: 2px solid var(--work-ink); }
+.lanes .studio .lane-head { border-top: 2px solid var(--studio-accent); }
+.lane { display: flex; flex-direction: column; padding-bottom: 72px; }
+
+/* Work: spec sheet */
+.spec { margin: 24px 0 0; display: grid; grid-template-columns: 9.5rem 1fr; border-top: 1px solid var(--work-line); }
+.spec dt, .spec dd { padding-block: 14px; border-bottom: 1px solid var(--work-line); margin: 0; }
+.spec dt { font: 500 0.72rem/1.9 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--work-mute); }
+.spec dd { min-width: 0; }
+.spec dd strong { font-weight: 700; }
+.spec dd small { display: block; color: var(--work-mute); font-size: 0.92rem; line-height: 1.5; margin-top: 2px; }
+
+/* Work: boot chain */
+.boot { margin-top: 36px; }
+.boot ol { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+.boot li {
+  position: relative;
+  padding: 12px 10px 10px;
+  border: 1.5px solid var(--work-ink);
+  font: 500 0.78rem/1.2 var(--mono);
+  text-align: center;
+  background: var(--work-bg);
+}
+.boot li + li { border-left: none; }
+.boot li:first-child { background: var(--work-ink); color: var(--work-bg); }
+.boot li:last-child { background: var(--work-accent); color: var(--work-bg); border-color: var(--work-accent); }
+.boot li span { display: block; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; margin-bottom: 4px; }
+.boot p { margin: 12px 0 0; color: var(--work-mute); font-size: 0.95rem; }
+
+/* Studio: projects */
+.projects { list-style: none; margin: 24px 0 0; padding: 0; display: grid; }
+.proj { display: grid; grid-template-columns: 112px 1fr; gap: 18px; padding-block: 18px; border-bottom: 1px solid var(--studio-line); }
+.proj:first-child { border-top: 1px solid var(--studio-line); }
+.thumb { width: 112px; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--studio-line); display: grid; place-items: center; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb.pixel img { image-rendering: pixelated; }
+.thumb.letrado { background: #2a1f48; }
+.thumb.letrado img { width: 70%; height: 70%; object-fit: contain; }
+.thumb.heimdall { background: #0f1d24; }
+.thumb.reonv { background: #1f2a22; }
+.proj-body { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.proj h3 { margin: 0; font-weight: 800; font-variation-settings: "wdth" 112; font-size: 1.3rem; line-height: 1.15; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.proj h3 a { text-decoration: none; }
+.proj h3 a:hover { text-decoration: underline; }
+.chip { font: 500 0.66rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 7px; border: 1px solid currentColor; border-radius: 4px; color: var(--studio-mute); white-space: nowrap; }
+.chip.live { color: #8fe3a5; }
+.chip.beta { color: var(--studio-accent); }
+.chip.soon { color: #c9a0ff; }
+.proj p { margin: 0; color: var(--studio-mute); font-size: 0.97rem; line-height: 1.55; }
+.proj .tagline { color: var(--studio-ink); }
+.stack { font: 400 0.74rem/1.5 var(--mono); color: var(--studio-mute); opacity: 0.85; }
+.also { margin-top: 28px; font-size: 0.95rem; color: var(--studio-mute); }
+.also a { color: var(--studio-ink); }
+
+/* Footer */
+.foot .side { padding-block: 28px 40px; font: 400 0.8rem/1.5 var(--mono); display: flex; gap: 18px; flex-wrap: wrap; }
+.foot .work { justify-content: space-between; color: var(--work-mute); border-top: 1px solid var(--work-line); }
+.foot .studio { border-top: 1px solid var(--studio-line); }
+
+@media (max-width: 860px) {
+  .split { grid-template-columns: 1fr; }
+  .bar .studio { display: none; }
+  .bar .work .links { display: flex; }
+  .hero .side { padding-block: 40px; }
+  .hero .work { align-items: flex-start; text-align: left; padding-bottom: 72px; }
+  .hero .studio { padding-top: 72px; }
+  .hero .work .word, .hero .work .lede, .hero .studio .word, .hero .studio .lede { padding: 0; }
+  .avatar { top: auto; bottom: auto; position: relative; left: auto; transform: none; justify-self: center; margin-block: -64px; width: 128px; background: linear-gradient(180deg, var(--work-ink) 50%, var(--studio-accent) 50%); }
+  .hero { display: grid; }
+  .boot ol { grid-template-columns: repeat(2, 1fr); }
+  .boot li:nth-child(3) { border-left: 1.5px solid var(--work-ink); border-top: none; }
+  .boot li:nth-child(4) { border-top: none; }
+}
+@media (min-width: 861px) { .bar .work .links { display: none; } }
+@media (max-width: 480px) {
+  .spec { grid-template-columns: 1fr; }
+  .spec dt { border-bottom: none; padding-bottom: 0; }
+  .proj { grid-template-columns: 76px 1fr; gap: 14px; }
+  .thumb { width: 76px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .word { animation: rise 700ms cubic-bezier(.2,.7,.2,1) both; }
+  .studio .word { animation-delay: 120ms; }
+  @keyframes rise { from { transform: translateY(14px); } to { transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<nav class="split bar" aria-label="Site">
+  <div class="side work">
+    <a class="wordmark" href="#top">lcbcfoo.dev</a>
+    <span class="links" style="gap:16px"><a href="#work">Work</a><a href="#studio">Studio</a></span>
+    <a class="mock-tag" href="index.html">Mockup A · all mockups</a>
+  </div>
+  <div class="side studio">
+    <a href="#work">Work</a>
+    <a href="#studio">Studio</a>
+    <a href="https://github.com/lcbcFoo">GitHub</a>
+  </div>
+</nav>
+
+<header class="split hero" id="top">
+  <h1 class="sr-only">Hello there!</h1>
+  <div class="side work">
+    <p class="label">Work</p>
+    <p class="word" aria-hidden="true">Hello</p>
+    <p class="lede">My name is Lucas, I am a computer engineer and hobbyist from Brazil, living in the silicon valley and working on GPU architecture at NVIDIA.</p>
+  </div>
+  <div class="avatar"><img src="assets/avatar.jpg" alt="Lucas's profile picture: a black and white border collie smiling on a sunny street"></div>
+  <div class="side studio">
+    <p class="label">Studio</p>
+    <p class="word" aria-hidden="true">there!</p>
+    <p class="lede">I am easy-going and enjoy working with diverse people and environments.</p>
+  </div>
+</header>
+
+<main class="split lanes">
+  <section class="side work lane" id="work" aria-labelledby="work-h">
+    <div class="lane-head">
+      <p class="label">Day job</p>
+      <h2 id="work-h">Senior GPU Architect at NVIDIA</h2>
+      <p>Over 7 years of experience in system architecture for ASIC, GPU, and SoC devices for both graphics and AI/ML workloads.</p>
+    </div>
+
+    <dl class="spec">
+      <dt>Now</dt>
+      <dd><strong>Secure boot of NVIDIA GPUs</strong><small>Blackwell, Rubin, and next gens. Coordinating across many hardware, firmware, and software teams to deliver a secure initialization of the system, from power-up to SW.</small></dd>
+      <dt>Before</dt>
+      <dd><strong>Lumentum/Idea, 5 years</strong><small>Developing embedded solutions and hardware-software co-design projects for photonic devices.</small></dd>
+      <dt>Education</dt>
+      <dd><strong>Master in Computer Science, UNICAMP</strong><small>Specialization in Computer Architecture and Energy Efficiency.</small></dd>
+      <dt>Creator of</dt>
+      <dd><strong>ReonV (2018)</strong><small>One of the first RISC-V processors published from Brazil.</small></dd>
+    </dl>
+
+    <div class="boot" aria-label="Secure initialization, from power-up to SW">
+      <p class="label">From power-up to SW</p>
+      <ol>
+        <li><span>stage 0</span>power-up</li>
+        <li><span>teams</span>hardware</li>
+        <li><span>teams</span>firmware</li>
+        <li><span>teams</span>SW</li>
+      </ol>
+      <p>A secure initialization of the system, across many hardware, firmware, and software teams.</p>
+    </div>
+  </section>
+
+  <section class="side studio lane" id="studio" aria-labelledby="studio-h">
+    <div class="lane-head">
+      <p class="label">Hobbies</p>
+      <h2 id="studio-h">Studio projects</h2>
+      <p>Hobbyist with several projects in GitHub exploring ML, LLM, optimization problems, games, full stack apps.</p>
+    </div>
+
+    <ul class="projects">
+      <li class="proj">
+        <div class="thumb letrado"><img src="assets/letrado-logo.png" alt=""></div>
+        <div class="proj-body">
+          <h3><a href="https://letrado.app">Letrado</a> <span class="chip live">Live · letrado.app</span></h3>
+          <p class="tagline">A daily word puzzle game where players find all hidden Portuguese words by dragging paths through adjacent letters.</p>
+          <p class="stack">React · TypeScript · Firebase · Python</p>
+        </div>
+      </li>
+      <li class="proj">
+        <div class="thumb"><img src="assets/olyrion-coast.jpg" alt=""></div>
+        <div class="proj-body">
+          <h3><a href="https://trialsofolyrion.com">Trials of Olyrion</a> <span class="chip beta">Closed beta</span></h3>
+          <p class="tagline">Locations, crafted materials, and a sense of place sit at the heart of the experience.</p>
+          <p>Now playable in a small, invitation-based closed beta.</p>
+          <p class="stack">React · PixiJS · Tauri · FastAPI · PostgreSQL</p>
+        </div>
+      </li>
+      <li class="proj">
+        <div class="thumb pixel"><img src="assets/deaddice-keyart.png" alt="" style="object-position:58% 50%"></div>
+        <div class="proj-body">
+          <h3>Dead Dice <span class="chip soon">Coming soon · Google Play</span></h3>
+          <p class="tagline">Hunting things and rolling down.</p>
+          <p>A portrait pixel-art dice roguelike with extraction: village → expedition → extract or descend.</p>
+          <p class="stack">TypeScript · PixiJS · Capacitor</p>
+        </div>
+      </li>
+      <li class="proj">
+        <div class="thumb heimdall">
+          <svg viewBox="0 0 64 64" width="62%" aria-hidden="true"><path d="M4 32 C16 14 48 14 60 32 C48 50 16 50 4 32Z" fill="none" stroke="#7fd6e8" stroke-width="3"/><circle cx="32" cy="32" r="10" fill="#7fd6e8"/><circle cx="32" cy="32" r="4" fill="#0f1d24"/></svg>
+        </div>
+        <div class="proj-body">
+          <h3><a href="https://github.com/lcbcFoo/heimdall-mcp-server">Heimdall</a> <span class="chip">Open source · ★ 105</span></h3>
+          <p class="tagline">Your AI coding assistant's long-term memory.</p>
+          <p>Heimdall gives your LLM a persistent, growing, cognitive memory of your specific codebase, lessons and memories carry over time.</p>
+          <p class="stack">Python · MCP · Qdrant · pip install heimdall-mcp</p>
+        </div>
+      </li>
+      <li class="proj">
+        <div class="thumb reonv">
+          <svg viewBox="0 0 64 64" width="70%" aria-hidden="true"><g stroke="#9fd8a8" stroke-width="2.5"><path d="M20 6v8M28 6v8M36 6v8M44 6v8M20 50v8M28 50v8M36 50v8M44 50v8M6 20h8M6 28h8M6 36h8M6 44h8M50 20h8M50 28h8M50 36h8M50 44h8"/></g><rect x="14" y="14" width="36" height="36" rx="3" fill="#9fd8a8"/><text x="32" y="36" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#1f2a22">RV32I</text></svg>
+        </div>
+        <div class="proj-body">
+          <h3><a href="https://github.com/lcbcFoo/ReonV">ReonV</a> <span class="chip">2018 · ★ 82</span></h3>
+          <p class="tagline">One of the first RISC-V processors published from Brazil.</p>
+          <p>A modified version of the Leon3, a synthesisable VHDL model of a 32-bit processor originally compliant with the SPARC V8 architecture, now changed to RISC-V ISA.</p>
+          <p class="stack">VHDL · RISC-V RV32I · GRLIB</p>
+        </div>
+      </li>
+    </ul>
+
+    <p class="also">Also on GitHub: <a href="https://github.com/lcbcFoo/foocolors.nvim">foocolors.nvim</a>, <a href="https://github.com/lcbcFoo/ironbar-gpu-top">ironbar-gpu-top</a>, <a href="https://github.com/lcbcFoo/circuitly">circuitly</a>, <a href="https://github.com/lcbcFoo/meNES">meNES</a>.</p>
+  </section>
+</main>
+
+<footer class="split foot">
+  <div class="side work"><span>Lucas Castro · lcbcFoo</span><span>Brazil → silicon valley</span></div>
+  <div class="side studio"><a href="https://github.com/lcbcFoo">GitHub</a><a href="#linkedin">LinkedIn</a></div>
+</footer>
+
+</body>
+</html>
