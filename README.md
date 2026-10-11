@@ -24,7 +24,8 @@ python3 scripts/check-site.py
 
 ## Deploy
 
-Pushes to `main` run the check and deploy to Cloudflare Pages through GitHub Actions
+Pushes to `main` run the check, build `dist/` (`python3 scripts/build-dist.py`, which versions asset links), and
+deploy it to Cloudflare Pages through GitHub Actions
 (`.github/workflows/deploy.yml`). Pull requests get a preview deployment. The workflow needs two repository
 secrets: `CLOUDFLARE_API_TOKEN` (permission: Account · Cloudflare Pages · Edit) and `CLOUDFLARE_ACCOUNT_ID`.
 

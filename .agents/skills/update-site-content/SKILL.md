@@ -164,7 +164,13 @@ to it with ← studio or Esc.
 ## Publishing
 
 The repo is public at `github.com/lcbcFoo/lcbcfoo.dev`. Pushing to `main` runs `.github/workflows/deploy.yml`: it
-runs the checker, copies only `index.html`, `404.html`, `css/`, `js/` and `assets/` into `dist/`, and deploys that to the
+runs the checker, then `scripts/build-dist.py` copies only `index.html`, `404.html`, `css/`, `js/` and `assets/` into
+`dist/` and deploys that to the
 Cloudflare Pages project `lcbcfoo-dev`, which serves `lcbcfoo.dev`. A failed check stops the deploy, and the last
 good version stays live. Pull requests get a preview URL. If you add a new top-level folder the page needs, add it to
-the copy step in the workflow.
+`FOLDERS` in `scripts/build-dist.py`.
+
+The build rewrites every `src`, `href` and `poster` pointing into `css/`, `js/` or `assets/` to end in `?v=<hash>`.
+The lcbcfoo.dev zone tells browsers to keep those files for 4 hours, so without the hash a visitor can get new HTML
+with an old stylesheet (broken layout until a hard refresh). Keep source links plain (no `?v=`), and reference CSS, JS
+and images only through those attributes, not through CSS `url()` or JS-built paths.

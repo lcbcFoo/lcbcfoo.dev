@@ -44,11 +44,10 @@ jobs:
         with:
           node-version: 22
 
-      - name: Collect the published files
-        # Only the site itself; mockups/, scripts/ and the agent docs stay in the repo.
-        run: |
-          mkdir dist
-          cp -r index.html 404.html css js assets dist/
+      - name: Build dist/
+        # Only the site itself (mockups/, scripts/ and the agent docs stay in the repo), with asset links
+        # versioned by content so browsers never pair new HTML with a cached old stylesheet.
+        run: python3 scripts/build-dist.py
 
       - name: Deploy to Cloudflare Pages
         run: |
